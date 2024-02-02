@@ -1,0 +1,32 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { resolve } from "path";
+import copy from "rollup-plugin-copy";
+
+export default defineConfig({
+  plugins: [
+    react(),
+    copy({
+      targets: [
+        { src: "public/manifest.json", dest: "dist" },
+        // { src: "public/background.js", dest: "dist" },
+        // { src: "public/contentScript.js", dest: "dist" },
+        // Add other static files here as needed
+      ],
+      hook: "writeBundle",
+    }),
+  ],
+  build: {
+    rollupOptions: {
+      input: {
+        popup: resolve(__dirname, "public/popup/index.html"),
+        options: resolve(__dirname, "public/options/index.html"),
+        background: resolve(__dirname, "public/background.js"),
+        contentScript: resolve(__dirname, "public/contentScript.js"),
+      },
+      output: {
+        entryFileNames: `assets/[name].js`,
+      },
+    },
+  },
+});
