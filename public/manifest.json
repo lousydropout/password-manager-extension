@@ -5,11 +5,11 @@
   "description": "A blockchain-based password manager.",
   "permissions": ["storage", "activeTab"],
   "action": {
-    "default_popup": "dist/popup/index.html",
+    "default_popup": "popup/index.html",
     "default_icon": {
-      "16": "images/icon16.png",
-      "48": "images/icon48.png",
-      "128": "images/icon128.png"
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
     }
   },
   "background": {
@@ -21,10 +21,10 @@
       "js": ["contentScript.js"]
     }
   ],
-  "options_page": "dist/options/index.html",
+  "options_page": "options/index.html",
   "icons": {
-    "16": "images/icon16.png",
-    "48": "images/icon48.png",
-    "128": "images/icon128.png"
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }
