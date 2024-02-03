@@ -7,7 +7,7 @@ const PopupPage: React.FC = () => {
   const [loggedIn, setLoggedIn] = useSessionStorage<boolean>("loggedIn", false);
 
   return (
-    <div className="p-4">
+    <div className="p-4 w-96 h-96">
       {!loggedIn ? (
         <LoginForm onLoginSuccess={() => setLoggedIn(true)} />
       ) : (
