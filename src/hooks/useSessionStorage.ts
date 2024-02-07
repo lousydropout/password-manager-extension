@@ -20,4 +20,4 @@ function useSessionStorage<T>(
   return [value, setValue];
 }
 
-export default useSessionStorage;
+export { useSessionStorage };
