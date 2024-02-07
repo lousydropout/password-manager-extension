@@ -1,4 +1,4 @@
-import React from "react";
+import { FC } from "react";
 
 interface CredentialItemProps {
   url: string;
@@ -9,7 +9,7 @@ interface CredentialItemProps {
   onDelete: () => void;
 }
 
-const CredentialItem: React.FC<CredentialItemProps> = ({
+const CredentialItem: FC<CredentialItemProps> = ({
   url,
   username,
   password,
@@ -33,4 +33,4 @@ const CredentialItem: React.FC<CredentialItemProps> = ({
   );
 };
 
-export default CredentialItem;
+export { CredentialItem };

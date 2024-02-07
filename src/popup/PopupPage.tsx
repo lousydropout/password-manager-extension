@@ -1,11 +1,11 @@
 // src/popup/PopupPage.tsx
-import React from "react";
-import LoginForm from "../components/LoginForm";
+import { FC } from "react";
+import { LoginForm } from "../components/LoginForm";
 // import { useSessionStorage } from "../hooks/useSessionStorage";
 import { useChromeStorageLocal } from "../hooks/useChromeLocalStorage";
 import { generateKey } from "../utils/encryption";
 
-const PopupPage: React.FC = () => {
+const PopupPage: FC = () => {
   const [loggedIn, setLoggedIn] = useChromeStorageLocal<boolean>(
     "loggedIn",
     false
@@ -42,4 +42,4 @@ const PopupPage: React.FC = () => {
   );
 };
 
-export default PopupPage;
+export { PopupPage };
