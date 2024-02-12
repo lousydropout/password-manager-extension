@@ -11,13 +11,16 @@ window.addEventListener("message", (event) => {
 
     // Check if the message's origin matches the targetOrigin
     if (origin !== targetOrigin) {
-      console.log(`Ignoring message from ${origin}, expected ${targetOrigin}`);
       return;
     }
 
     // Process the message as it matches the expected origin
     if (event.data.type && event.data.type === EVENT_TYPE) {
-      chrome.runtime.sendMessage({ password: event.data.message });
+      chrome.runtime
+        .sendMessage({ password: event.data.message })
+        .catch((e) => {
+          console.log("[warning] potential sendMessage failure: ", e);
+        });
     }
   });
 });
