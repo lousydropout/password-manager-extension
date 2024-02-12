@@ -21,7 +21,7 @@ function useChromeStorageLocal<T>(
           // Assuming JSON.parse successfully returns the correct type
           setValue(JSON.parse(result[key]) as T);
         } catch (error) {
-          console.error("Error parsing value from storage:", error);
+          console.log("[Warning] Error parsing value from storage:", error);
           // If parsing fails and you know the fallback is of type T, cast it
           // If you're unsure about the fallback value's type compatibility with T, handle accordingly
           setValue(result[key] as unknown as T); // Use unknown as an intermediary if direct cast is not allowed

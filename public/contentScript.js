@@ -1,17 +1,24 @@
 console.log("Content script running.");
 
 const EVENT_TYPE = "FROM_PAGE";
-const EVENT_ORIGIN = "http://localhost:5173";
 
 window.addEventListener("message", (event) => {
-  console.log("event: ", event);
-  // Validate sender origin to ensure security (for production use)
-  if (event.origin !== EVENT_ORIGIN) {
-    return; // Ignore messages from unknown origins
-  }
+  // Fetch the targetOrigin each time a message is received
+  chrome.storage.local.get("targetOrigin", (data) => {
+    // Use the retrieved targetOrigin if it exists, otherwise default to "http://localhost:5173"
+    const targetOrigin = data.targetOrigin || "http://localhost:5173";
 
-  if (event.data.type && event.data.type === EVENT_TYPE) {
-    console.log("Secret password received from page:", event.data.message);
-    chrome.runtime.sendMessage({ password: event.data.message });
-  }
+    // Check if the message's origin matches the targetOrigin
+    if (event.origin !== targetOrigin) {
+      console.warn(
+        `Ignoring message from ${event.origin}, expected ${targetOrigin}`
+      );
+      return;
+    }
+
+    // Process the message as it matches the expected origin
+    if (event.data.type && event.data.type === EVENT_TYPE) {
+      chrome.runtime.sendMessage({ password: event.data.message });
+    }
+  });
 });
