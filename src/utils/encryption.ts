@@ -8,7 +8,7 @@ interface Keys {
   wrappedKey: string;
 }
 
-// Utility functions for encoding and decoding remain the same
+// Utility functions for encoding and decoding
 function bufferToBase64(buffer: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(buffer)));
 }
@@ -22,7 +22,7 @@ function base64ToBuffer(base64: string): ArrayBuffer {
   return bytes.buffer;
 }
 
-// Function to derive a key from a password remains the same
+// Function to derive a key from a password
 async function deriveKeyFromPassword(
   password: string,
   salt: Uint8Array

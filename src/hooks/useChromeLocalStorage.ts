@@ -17,8 +17,15 @@ function useChromeStorageLocal<T>(
     // Asynchronously get the stored value from chrome.storage.local
     chrome.storage.local.get([key], (result: ChromeStorageLocalSet) => {
       if (result[key] !== undefined) {
-        // Parse the stored JSON string back into a TypeScript value of type T if it exists
-        setValue(JSON.parse(result[key]));
+        try {
+          // Assuming JSON.parse successfully returns the correct type
+          setValue(JSON.parse(result[key]) as T);
+        } catch (error) {
+          console.error("Error parsing value from storage:", error);
+          // If parsing fails and you know the fallback is of type T, cast it
+          // If you're unsure about the fallback value's type compatibility with T, handle accordingly
+          setValue(result[key] as unknown as T); // Use unknown as an intermediary if direct cast is not allowed
+        }
       }
     });
   }, [key]);
