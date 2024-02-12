@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Allows users to open the side panel by clicking on the action toolbar icon
 chrome.sidePanel
-  .setPanelBehavior({ openPanelOnActionClick: false }) // set to `false` to allow regular popups
+  .setPanelBehavior({ openPanelOnActionClick: true }) // set to `false` to allow regular popups
   .catch((error) => console.error(error));
 
 // Listen for when a tab is activated (switched to).
