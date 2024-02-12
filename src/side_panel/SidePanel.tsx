@@ -1,9 +1,9 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { LoginForm } from "../components/LoginForm";
 import { useChromeStorageLocal } from "../hooks/useChromeLocalStorage";
 import { generateKey } from "../utils/encryption";
 
-const PopupPage: FC = () => {
+const SidePanel: FC = () => {
   const [loggedIn, setLoggedIn] = useChromeStorageLocal<boolean>(
     "loggedIn",
     false
@@ -13,7 +13,32 @@ const PopupPage: FC = () => {
     ""
   );
 
-  const [url, setUrl] = useState<String>("unknown");
+  function updateUrl() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const currentTab = tabs[0];
+      if (currentTab) {
+        const urlParts = new URL(currentTab.url as string);
+        setUrl(urlParts.hostname);
+      }
+    });
+  }
+
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener(function (message) {
+      if (message.action === "updateUrl") {
+        updateUrl();
+      }
+    });
+
+    // In the popup script or a React useEffect hook
+    document.addEventListener("DOMContentLoaded", function () {
+      chrome.storage.local.get(["wrappedKey"], function (result) {
+        setWrappedKey(result["wrappedKey"]);
+      });
+    });
+
+    updateUrl();
+  }, []);
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -28,6 +53,8 @@ const PopupPage: FC = () => {
     });
   }, []);
 
+  const [url, setUrl] = useChromeStorageLocal<String>("url", "unknown");
+
   const handleGenerateKey = async (password: string) => {
     try {
       const { wrappedKey } = await generateKey(password);
@@ -38,7 +65,8 @@ const PopupPage: FC = () => {
   };
 
   return (
-    <div className="p-4 w-96 h-96">
+    <div className="p-4 max-w-full w-96 h-96">
+      {/* <button onClick={() => }>Refresh</button> */}
       <h2>
         {url}: {wrappedKey}
       </h2>
@@ -57,4 +85,4 @@ const PopupPage: FC = () => {
   );
 };
 
-export { PopupPage };
+export { SidePanel };

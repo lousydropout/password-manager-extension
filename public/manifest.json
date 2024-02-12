@@ -3,7 +3,7 @@
   "name": "Password Manager Extension",
   "version": "1.0",
   "description": "A blockchain-based password manager.",
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "sidePanel", "tabs", "scripting"],
   "action": {
     "default_popup": "popup/index.html",
     "default_icon": {
@@ -12,6 +12,8 @@
       "128": "icons/icon128.png"
     }
   },
+
+  "side_panel": { "default_path": "side_panel/index.html" },
   "background": {
     "service_worker": "background.js"
   },
