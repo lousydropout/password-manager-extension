@@ -1,18 +1,17 @@
-console.log("Content script running.");
-
 const EVENT_TYPE = "FROM_PAGE";
+const WEB_DAPP = "localhost";
 
 window.addEventListener("message", (event) => {
   // Fetch the targetOrigin each time a message is received
   chrome.storage.local.get("targetOrigin", (data) => {
     // Use the retrieved targetOrigin if it exists, otherwise default to "http://localhost:5173"
-    const targetOrigin = data.targetOrigin || "http://localhost:5173";
+    const targetOrigin = data.targetOrigin || WEB_DAPP;
+    // get origin's hostname
+    const origin = new URL(event.origin).hostname;
 
     // Check if the message's origin matches the targetOrigin
-    if (event.origin !== targetOrigin) {
-      console.warn(
-        `Ignoring message from ${event.origin}, expected ${targetOrigin}`
-      );
+    if (origin !== targetOrigin) {
+      console.log(`Ignoring message from ${origin}, expected ${targetOrigin}`);
       return;
     }
 

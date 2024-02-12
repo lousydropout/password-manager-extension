@@ -10,7 +10,7 @@ export default defineConfig({
       targets: [
         { src: "public/manifest.json", dest: "dist" },
         // { src: "public/background.js", dest: "dist" },
-        // { src: "public/contentScript.js", dest: "dist" },
+        { src: "src/contentScript.ts", dest: "dist" },
         // Add other static files here as needed
       ],
       hook: "writeBundle",
