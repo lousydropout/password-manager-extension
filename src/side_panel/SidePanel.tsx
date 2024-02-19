@@ -12,6 +12,10 @@ const SidePanel: FC = () => {
     "wrappedKey",
     ""
   );
+  const [walletAddress, _setWalletAddress] = useChromeStorageLocal<string>(
+    "walletAddress",
+    ""
+  );
 
   function updateUrl() {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -28,13 +32,6 @@ const SidePanel: FC = () => {
       if (message.action === "updateUrl") {
         updateUrl();
       }
-    });
-
-    // In the popup script or a React useEffect hook
-    document.addEventListener("DOMContentLoaded", function () {
-      chrome.storage.local.get(["wrappedKey"], function (result) {
-        setWrappedKey(result["wrappedKey"]);
-      });
     });
 
     updateUrl();
@@ -70,6 +67,7 @@ const SidePanel: FC = () => {
       <h2>
         {url}: {wrappedKey}
       </h2>
+      <h2>walletAddress: {walletAddress}</h2>
       <button onClick={() => handleGenerateKey("password")}>
         Generate Key
       </button>
