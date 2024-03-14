@@ -50,7 +50,17 @@ async function deriveKeyFromPassword(
 }
 
 // Function to generate a secret key
-async function generateKey(password: string): Promise<Keys> {
+async function generateKey(): Promise<CryptoKey> {
+  const key = await crypto.subtle.generateKey(
+    { name: "AES-GCM", length: 256 },
+    true,
+    ["encrypt", "decrypt"]
+  );
+  return key;
+}
+
+// Function to generate a secret key
+async function generateWrappedKey(password: string): Promise<Keys> {
   const key = await crypto.subtle.generateKey(
     { name: "AES-GCM", length: 256 },
     true,
@@ -60,6 +70,22 @@ async function generateKey(password: string): Promise<Keys> {
     key,
     wrappedKey: await wrapKey(key, password),
   };
+}
+
+// Export JWK-formatted key
+async function exportCryptoKey(key: CryptoKey): Promise<JsonWebKey> {
+  return await window.crypto.subtle.exportKey("jwk", key);
+}
+
+// Import JWK-formatted key
+async function importCryptoKey(jwkString: JsonWebKey): Promise<CryptoKey> {
+  return await window.crypto.subtle.importKey(
+    "jwk",
+    jwkString,
+    { name: "AES-GCM", length: 256 },
+    true,
+    ["encrypt", "decrypt"]
+  );
 }
 
 // Function to wrap an AES key with a password using AES-KW
@@ -129,7 +155,29 @@ async function decrypt(key: CryptoKey, encrypted: Encrypted): Promise<string> {
   return new TextDecoder("utf-8").decode(decrypted);
 }
 
-export { generateKey, wrapKey, unwrapKey, encrypt, decrypt };
+// hashing function
+async function hash(inputString: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(inputString);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+}
+
+export {
+  generateKey,
+  generateWrappedKey,
+  wrapKey,
+  unwrapKey,
+  exportCryptoKey,
+  importCryptoKey,
+  encrypt,
+  decrypt,
+  hash,
+};
 
 // async function generateQRCode(wrappedKey) {
 //   // Assuming wrappedKey is a Base64 string

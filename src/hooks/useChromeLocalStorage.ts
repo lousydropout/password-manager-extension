@@ -1,16 +1,37 @@
 import { useState, useEffect } from "react";
 
-// Assuming you have the types for chrome.storage,
-// if not you might need to install @types/chrome or define them yourself
 interface ChromeStorageLocalSet {
-  [key: string]: any; // Changed from string to any to accommodate JSON parsing
+  [key: string]: any; // To accommodate JSON parsing
+}
+
+// Define the function signature with generic type T for the return value.
+function getFromChromeStorage<T>(key: string, defaultValue: T): Promise<T> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get([key], (result) => {
+      if (result[key] !== undefined) {
+        try {
+          // Attempt to parse the stored JSON string back into an object of type T.
+          const value: T = JSON.parse(result[key]);
+          resolve(value);
+        } catch (error) {
+          console.error("[Warning] Error parsing value from storage:", error);
+          // Resolve with the default value if parsing fails.
+          resolve(defaultValue);
+        }
+      } else {
+        // Resolve with the default value if the key does not exist in storage.
+        resolve(defaultValue);
+      }
+    });
+  });
 }
 
 function useChromeStorageLocal<T>(
   key: string,
   defaultValue: T
-): [T, React.Dispatch<React.SetStateAction<T>>] {
+): [T, React.Dispatch<React.SetStateAction<T>>, boolean] {
   const [value, setValue] = useState<T>(defaultValue);
+  const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     // Asynchronously get the stored value from chrome.storage.local
@@ -19,10 +40,11 @@ function useChromeStorageLocal<T>(
         try {
           setValue(JSON.parse(result[key]) as T);
         } catch (error) {
-          console.log("[Warning] Error parsing value from storage:", error);
+          console.debug("[Warning] Error parsing value from storage:", error);
           setValue(result[key] as unknown as T);
         }
       }
+      setHasLoaded(true); // Update loaded state to true after fetching the value
     });
   }, [key]);
 
@@ -37,11 +59,14 @@ function useChromeStorageLocal<T>(
           const newValue = changes[key].newValue;
           setValue(JSON.parse(newValue) as T);
         } catch (error) {
-          console.log(
-            "[Warning] Error parsing updated value from storage:",
-            error
-          );
-          setValue(changes[key].newValue as unknown as T);
+          if (error instanceof SyntaxError) {
+            setValue(changes[key].newValue as unknown as T);
+          } else {
+            console.debug(
+              "[Warning] Error parsing updated value from storage:",
+              error
+            );
+          }
         }
       }
     };
@@ -62,7 +87,7 @@ function useChromeStorageLocal<T>(
     chrome.storage.local.set({ [key]: JSON.stringify(valueToStore) });
   };
 
-  return [value, setStoredValue];
+  return [value, setStoredValue, hasLoaded];
 }
 
-export { useChromeStorageLocal };
+export { useChromeStorageLocal, getFromChromeStorage };

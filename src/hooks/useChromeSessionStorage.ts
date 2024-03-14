@@ -19,7 +19,7 @@ function useChromeStorageSession<T>(
         try {
           setValue(JSON.parse(result[key]) as T);
         } catch (error) {
-          console.log("[Warning] Error parsing value from storage:", error);
+          console.debug("[Warning] Error parsing value from storage:", error);
           setValue(result[key] as unknown as T);
         }
       }
@@ -37,7 +37,7 @@ function useChromeStorageSession<T>(
           const newValue = changes[key].newValue;
           setValue(JSON.parse(newValue) as T);
         } catch (error) {
-          console.log(
+          console.debug(
             "[Warning] Error parsing updated value from storage:",
             error
           );

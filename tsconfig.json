@@ -17,10 +17,10 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "public/contentScript.js"],
+  "include": ["src", "public/contentScript.js", "chakra-ui"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

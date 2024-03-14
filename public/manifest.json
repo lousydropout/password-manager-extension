@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Password Manager Extension",
+  "name": "KeyVault Password Manager",
   "version": "1.0",
   "description": "A blockchain-based password manager.",
   "permissions": ["storage", "activeTab", "sidePanel", "tabs"],
