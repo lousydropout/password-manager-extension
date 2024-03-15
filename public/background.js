@@ -6,7 +6,9 @@ const REQUEST = "REQUEST";
 console.log("Background script running.");
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // console.log("[background] Message received: ", message);
+  if (message.origin === "koni-page" || message.origin === "koni-content")
+    return false;
+  console.debug("[background] Message received: ", message);
 
   if (!message.type) message.type = null;
 

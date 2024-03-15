@@ -1,6 +1,10 @@
 import { FC, useEffect, useState } from "react";
 import { useChromeStorageLocal } from "../hooks/useChromeLocalStorage";
-import { useFiniteState } from "../hooks/useFiniteState";
+import {
+  Context,
+  Message,
+  useFiniteStateMachine,
+} from "../hooks/useFiniteStateMachine";
 import { Box, Heading, Text } from "@chakra-ui/react";
 import { CustomButton } from "../components/CustomButton";
 import { CustomInput } from "../components/CustomInput";
@@ -18,9 +22,24 @@ type State =
   | "ACCOUNT_RESET"
   | "LOGGED_IN";
 
-const stateMachine = (state: State, action: string) => {
-  console.log("(prevState, action): ", `(${state}, ${action})`);
-  return state;
+const calculateNextState = (
+  currentContext: Context<State>,
+  message: Message
+): Context<State> => {
+  console.log("(prevState, action): ", currentContext, message);
+
+  if (message.action === "REQUEST_CONTEXT") {
+    console.log("[REQUEST_CONTEXT]: ", currentContext, message);
+    const result = { ...currentContext, action: "UPDATE_CONTEXT", send: true };
+    console.log("[request context result] ", result);
+    return result;
+  }
+
+  return {
+    ...currentContext,
+    context: { ...currentContext.context, ...message.data },
+    send: false,
+  };
 };
 
 const SidePanel: FC = () => {
@@ -31,9 +50,9 @@ const SidePanel: FC = () => {
   // const [walletAddress, setWalletAddress, hasLoadedWalletAddress] =
   //   useChromeStorageLocal<string>("walletAddress", "");
 
-  const [state, updateContext] = useFiniteState<State>(
+  const [state, context, updateContext] = useFiniteStateMachine<State>(
     "CHECKING",
-    stateMachine
+    calculateNextState
   );
   const [jwkHash, setJwkHash] = useState<string>("");
 
@@ -64,7 +83,10 @@ const SidePanel: FC = () => {
   return (
     <>
       <Heading as={"h1"} my={12} textAlign={"center"}>
-        Status: {state} | {jwkString} | {jwkHash}
+        Status: {state} | {jwkHash}
+      </Heading>
+      <Heading as={"h1"} my={12} textAlign={"center"}>
+        Context: {JSON.stringify(context)}
       </Heading>
       {state === "CHECKING" && (
         <Box px={4} py={12} display={"flex"} flexDir={"column"} gap={4}>

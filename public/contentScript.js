@@ -31,13 +31,6 @@ window.addEventListener("message", (event) => {
   });
 });
 
-chrome.storage.local.get("walletAddress", (data) => {
-  keyvault = data?.walletAddress
-    ? { createdAccount: true }
-    : { createdAccount: false };
-  window.sessionStorage.setItem("keyvault", JSON.stringify(keyvault));
-});
-
 // receives messages from popup/sidepanel
 chrome.runtime.onMessage.addListener((msg) => {
   // get message
