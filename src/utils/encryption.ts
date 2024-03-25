@@ -1,9 +1,9 @@
-interface Encrypted {
+export interface Encrypted {
   iv: string;
   ciphertext: string;
 }
 
-interface Keys {
+export interface Keys {
   key: CryptoKey;
   wrappedKey: string;
 }

@@ -15,6 +15,7 @@ export interface CustomInputProps extends InputProps {
   isReadOnly?: boolean;
   type?: string;
   variant?: "outline" | "unstyled" | "flushed" | "filled";
+  required?: boolean;
 }
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -41,13 +42,9 @@ const CustomInput: React.FC<CustomInputProps> = ({
         <Input
           variant={variant}
           type={type}
-          bgColor={variant === "filled" ? colors.secondary._active.bg : ""}
-          _hover={{
-            bgColor: variant === "filled" ? colors.secondary._active.bg : "",
-          }}
-          _active={{
-            bgColor: variant === "filled" ? colors.secondary._active.bg : "",
-          }}
+          bgColor={"transparent"}
+          _hover={{ bgColor: "transparent" }}
+          _active={{ bgColor: "transparent" }}
           ringColor={colors.secondary.bg}
           borderColor={colors.secondary.bg}
           focusBorderColor={colors.primary.bg}

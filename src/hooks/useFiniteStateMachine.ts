@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useChromeStorageLocal } from "./useChromeLocalStorage";
 import { useCurrentTab } from "./useCurrentTab";
 
@@ -26,53 +26,53 @@ function useFiniteStateMachine<State>(
     message: Message
   ) => Context<State>
 ): [
-  State,
-  Record<string, any>,
+  Context<State> | undefined,
   (
     action?: string | null,
     _context?: Record<string, any>,
     send?: boolean
-  ) => void
+  ) => void,
+  (action: string, data: Record<string, any>) => void
 ] {
   // Note: there are 2 actions:
   //   - `action` -- this is the action received by the state machine and that'll be used to modify the state
   //   - `context.action` -- this is the action to be sent as part of `postMessage`.
 
-  const [url] = useChromeStorageLocal<string>("URL", URL);
-  const [currentTab] = useCurrentTab();
   const [message] = useChromeStorageLocal<Message>("action", {
     type: "FROM_EXTENSION",
     action: "",
     data: {},
   });
-  const [context, setContext] = useChromeStorageLocal<Context<State>>(
-    "context",
-    { state: defaultState, action: "", context: {}, send: false }
-  );
+  const [context, setContext, hasLoadedContext] = useChromeStorageLocal<
+    Context<State> | undefined
+  >("context", undefined);
 
   const updateContext = (
     action: string | null = null,
     data: Record<string, any> = {},
     send: boolean = false
   ) => {
-    setContext((prev) => ({
-      ...prev,
-      context: { ...prev.context, ...data },
-      action: action ? action : "",
-      send,
-    }));
+    console.debug(
+      "[useFSM updateContext] action, data, send",
+      action,
+      data,
+      send
+    );
+    setContext((prev) => {
+      if (prev) {
+        return {
+          ...prev,
+          context: { ...prev.context, ...data },
+          action: action ? action : "",
+          send,
+        };
+      }
+    });
   };
 
   const postMessage = async (action: string, data: Record<string, any>) => {
     // get all Keyvault tab's IDs
     const tabs = await chrome.tabs.query({ title: "KeyVault" });
-    const tabIds = tabs.map((tab) => tab.id);
-
-    // if no tab has title of `KeyVault`, open one
-    if (tabs.length === 0 || !tabIds.includes(currentTab?.id)) {
-      const newTab = await chrome.tabs.create({ url });
-      tabs.push(newTab);
-    }
 
     // send to all KeyVault tabs (nothing sensitive is ever sent)
     tabs.forEach(async (tab) => {
@@ -91,8 +91,9 @@ function useFiniteStateMachine<State>(
   useEffect(() => {
     if (!message) return;
     setContext((currentContext) => {
+      if (!currentContext) return currentContext;
       const nextContext = calculateNextState(currentContext, message);
-      console.log("nextContext: ", nextContext);
+      console.debug("[useFSM nextContext]: ", nextContext);
       return nextContext;
     });
   }, [message]);
@@ -101,15 +102,36 @@ function useFiniteStateMachine<State>(
     console.log("context: ", context);
     const sendMessage = async () => {
       setContext((prev) => {
+        if (!prev) return prev;
+        console.debug("[useFSM useEffect setContext] context: ", prev);
+        if (!(prev.send && prev.action)) return prev;
         postMessage(prev.action, prev.context);
-        return { ...prev, send: false };
+        return { ...prev, action: "", send: false };
       });
     };
 
-    if (context.send && context.action) sendMessage();
+    sendMessage();
   }, [context]);
 
-  return [context.state, context.context, updateContext];
+  const updateState = (action: string, data: Record<string, any>) => {
+    setContext((currentContext) => {
+      if (!currentContext) return currentContext;
+      const message: Message = { action, data, type: "FROM_EXTENSION" };
+      return calculateNextState(currentContext, message);
+    });
+  };
+
+  useEffect(() => {
+    if (hasLoadedContext && context === undefined) {
+      setContext((prev) => {
+        if (!prev)
+          return { state: defaultState, action: "", context: {}, send: false };
+        return { ...prev, state: defaultState };
+      });
+    }
+  }, [hasLoadedContext]);
+
+  return [context, updateContext, updateState];
 }
 
 export { useFiniteStateMachine };

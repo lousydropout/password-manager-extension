@@ -8,7 +8,12 @@ const getHostname = (
   if (currentTab?.url) {
     try {
       const urlParts = new URL(currentTab.url);
-      return urlParts.hostname;
+      const hostname = urlParts.hostname;
+      const parts = hostname.split(".");
+      if (parts.length > 2) {
+        return parts.slice(1).join(".");
+      }
+      return hostname;
     } catch (e) {
       console.log("Unable to read current tab's url: ", e);
     }
