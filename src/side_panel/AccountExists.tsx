@@ -18,6 +18,7 @@ export const AccountExists = ({ setJwk, contextState }: AccountExistsProps) => {
   >();
   const [encKey, setEncKey] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string | undefined>();
+  const [importing, setImporting] = useState<boolean>(false);
 
   return (
     <Box px={4} py={12} display={"flex"} flexDir={"column"} gap={4}>
@@ -56,9 +57,11 @@ export const AccountExists = ({ setJwk, contextState }: AccountExistsProps) => {
           </Text>
           <CustomButton
             colorScheme="primary"
+            isDisabled={importing}
             onClick={async () => {
               let _jwk;
               try {
+                setImporting(true);
                 _jwk = JSON.parse(encKey);
                 await importCryptoKey(_jwk);
                 const jwkString = JSON.stringify(
@@ -87,6 +90,7 @@ export const AccountExists = ({ setJwk, contextState }: AccountExistsProps) => {
                 setJwk(_jwk);
               } catch (e) {
                 setErrorMsg("Invalid encryption key");
+                setImporting(false);
                 return;
               }
             }}

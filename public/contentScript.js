@@ -47,3 +47,13 @@ chrome.runtime.onMessage.addListener((msg) => {
     window.postMessage(message);
   }
 });
+
+// Inject data from chrome.storage.local
+chrome.storage.local.get(
+  ["encrypted", "numOnChain"],
+  ({ encrypted, numOnChain }) => {
+    console.log("[content] Encrypted data: ", encrypted, numOnChain);
+    window.sessionStorage.setItem("encrypted", encrypted || []);
+    window.sessionStorage.setItem("numOnChain", numOnChain || 0);
+  }
+);

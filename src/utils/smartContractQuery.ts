@@ -2,6 +2,7 @@ export async function queryData(
   method: string,
   queryParams: Record<string, any>
 ): Promise<unknown> {
+  console.log("Querying data with method:", method, "and params:", queryParams);
   const apiUrl = "https://keyvault-query.lousydropout.com";
 
   // Constructing query string from query params object

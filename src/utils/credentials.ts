@@ -1,4 +1,4 @@
-import { Encrypted, encrypt } from "./encryption";
+import { Encrypted, decrypt, encrypt } from "./encryption";
 
 export interface Cred {
   prev: number;
@@ -17,7 +17,10 @@ export interface IndexedEntries {
   [key: string]: Cred;
 }
 
-async function encryptCred(cryptoKey: CryptoKey, entry: Cred): Promise<Cred> {
+export async function encryptCred(
+  cryptoKey: CryptoKey,
+  entry: Cred
+): Promise<Cred> {
   const plaintext = JSON.stringify({
     url: entry.url,
     username: entry.username,
@@ -87,11 +90,7 @@ function hash(entry: Cred): string {
   });
 }
 
-export async function merge(
-  cryptoKey: CryptoKey,
-  source: Cred[],
-  onChain: Cred[]
-): Promise<Cred[]> {
+export async function merge(source: Cred[], onChain: Cred[]): Promise<Cred[]> {
   const result = source.filter((entry) => entry.onChain);
   // assert that result contains only onChain entries
   if (
@@ -140,25 +139,21 @@ export async function merge(
 
   // add entries to result array
   function addEntriesToResult(entries: Cred[], onChain: boolean) {
-    entries.slice(last + 1).forEach((entry, k) => {
+    entries.slice(last).forEach((entry, k) => {
       result.push({ ...entry, onChain });
       newEntries.delete(hash(entry)); // remove from newEntries if it exists there
 
       // update successor
-      const elem = source
+      const found = source
         .slice(last)
-        .filter((sourceEntry) => sourceEntry.prev == entry.prev)[0];
-      source[successors[elem.prev]].prev = k;
+        .filter((sourceEntry) => sourceEntry.prev == entry.prev);
+      if (found.length > 0) source[successors[found[0].prev]].prev = k;
     });
   }
 
   addEntriesToResult(onChain, true); // add onChain entries
   addEntriesToResult(source, false); // add source entries
 
-  // update ciphertexts and current indices
-  for (let curr = last; curr < result.length; curr++) {
-    result[curr] = { ...(await encryptCred(cryptoKey, result[curr])), curr };
-  }
   return result;
 }
 
@@ -177,4 +172,14 @@ export function getCredsByURL(entries: Cred[]): Record<string, Cred[]> {
     });
 
   return results;
+}
+
+export async function decryptEntry(
+  cryptoKey: CryptoKey,
+  encryptedEntry: Encrypted
+): Promise<Cred> {
+  return {
+    ...JSON.parse(await decrypt(cryptoKey, encryptedEntry)),
+    ciphertext: encryptedEntry,
+  };
 }

@@ -1,12 +1,12 @@
 {
   "source": {
-    "hash": "0x98a21789962117687d303bdef4ba563c5b86936500dc159c4a96a447bb349976",
+    "hash": "0x85cd887164cf4aef97c91c571beb176f5a937031c07e7338ff61c5eaf1e8ebdc",
     "language": "ink! 4.3.0",
-    "compiler": "rustc 1.75.0-nightly",
+    "compiler": "rustc 1.69.0",
     "build_info": {
-      "build_mode": "Release",
+      "build_mode": "Debug",
       "cargo_contract_version": "3.0.1",
-      "rust_toolchain": "nightly-x86_64-unknown-linux-gnu",
+      "rust_toolchain": "stable-x86_64-unknown-linux-gnu",
       "wasm_opt_settings": {
         "keep_debug_symbols": false,
         "optimization_passes": "Z"
@@ -16,9 +16,7 @@
   "contract": {
     "name": "keyvault",
     "version": "1.0.0",
-    "authors": [
-      "lousydropout <lousydropout@gmail.com>"
-    ]
+    "authors": ["lousydropout <lousydropout@gmail.com>"]
   },
   "spec": {
     "constructors": [
@@ -27,19 +25,15 @@
           {
             "label": "owner",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
               "type": 0
             }
           },
           {
             "label": "latest_compatible_browser_extension_version",
             "type": {
-              "displayName": [
-                "Vec"
-              ],
-              "type": 4
+              "displayName": ["u32"],
+              "type": 5
             }
           }
         ],
@@ -48,10 +42,7 @@
         "label": "new",
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink_primitives",
-            "ConstructorResult"
-          ],
+          "displayName": ["ink_primitives", "ConstructorResult"],
           "type": 6
         },
         "selector": "0x9bae9d5e"
@@ -60,49 +51,80 @@
     "docs": [],
     "environment": {
       "accountId": {
-        "displayName": [
-          "AccountId"
-        ],
+        "displayName": ["AccountId"],
         "type": 0
       },
       "balance": {
-        "displayName": [
-          "Balance"
-        ],
+        "displayName": ["Balance"],
         "type": 3
       },
       "blockNumber": {
-        "displayName": [
-          "BlockNumber"
-        ],
+        "displayName": ["BlockNumber"],
         "type": 5
       },
       "chainExtension": {
-        "displayName": [
-          "ChainExtension"
-        ],
-        "type": 24
+        "displayName": ["ChainExtension"],
+        "type": 32
       },
       "hash": {
-        "displayName": [
-          "Hash"
-        ],
-        "type": 22
+        "displayName": ["Hash"],
+        "type": 30
       },
       "maxEventTopics": 4,
       "timestamp": {
-        "displayName": [
-          "Timestamp"
-        ],
-        "type": 23
+        "displayName": ["Timestamp"],
+        "type": 31
       }
     },
-    "events": [],
+    "events": [
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "user",
+            "type": {
+              "displayName": ["AccountId"],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [
+          "Defines an event that is emitted",
+          "when a user registers an account."
+        ],
+        "label": "Registered"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "user",
+            "type": {
+              "displayName": ["AccountId"],
+              "type": 0
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "num_entries",
+            "type": {
+              "displayName": ["u32"],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          "Defines an event that is emitted",
+          "every time an update is made."
+        ],
+        "label": "AddedEntry"
+      }
+    ],
     "lang_error": {
-      "displayName": [
-        "ink",
-        "LangError"
-      ],
+      "displayName": ["ink", "LangError"],
       "type": 8
     },
     "messages": [
@@ -111,9 +133,7 @@
           {
             "label": "latest",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
               "type": 0
             }
           }
@@ -126,10 +146,7 @@
         "mutates": true,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
+          "displayName": ["ink", "MessageResult"],
           "type": 9
         },
         "selector": "0xdc3f2346"
@@ -137,27 +154,20 @@
       {
         "args": [
           {
-            "label": "agrees_to_terms",
+            "label": "encryption_key_hash",
             "type": {
-              "displayName": [
-                "bool"
-              ],
-              "type": 12
+              "displayName": ["Vec"],
+              "type": 4
             }
           }
         ],
         "default": false,
-        "docs": [
-          " Creates account"
-        ],
+        "docs": [" Creates account"],
         "label": "create_account",
         "mutates": true,
         "payable": true,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
+          "displayName": ["ink", "MessageResult"],
           "type": 9
         },
         "selector": "0x470c28ee"
@@ -165,29 +175,44 @@
       {
         "args": [
           {
+            "label": "account_id",
+            "type": {
+              "displayName": ["AccountId"],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [" Retrieves the hash of the encryption key of an AccountId"],
+        "label": "get_encryption_key_hash",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": ["ink", "MessageResult"],
+          "type": 12
+        },
+        "selector": "0x279f1ad1"
+      },
+      {
+        "args": [
+          {
             "label": "expected_index",
             "type": {
-              "displayName": [
-                "u32"
-              ],
+              "displayName": ["u32"],
               "type": 5
             }
           },
           {
             "label": "iv",
             "type": {
-              "displayName": [
-                "Vec"
-              ],
+              "displayName": ["Vec"],
               "type": 4
             }
           },
           {
             "label": "ciphertext",
             "type": {
-              "displayName": [
-                "Vec"
-              ],
+              "displayName": ["Vec"],
               "type": 4
             }
           }
@@ -200,10 +225,7 @@
         "mutates": true,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
+          "displayName": ["ink", "MessageResult"],
           "type": 9
         },
         "selector": "0x8cd84b6c"
@@ -211,66 +233,67 @@
       {
         "args": [
           {
-            "label": "account_id",
+            "label": "expected_index",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
-              "type": 0
+              "displayName": ["u32"],
+              "type": 5
+            }
+          },
+          {
+            "label": "entries",
+            "type": {
+              "displayName": ["Vec"],
+              "type": 14
             }
           }
         ],
         "default": false,
         "docs": [
-          " Retrieves the number of entries for a given account ID."
+          " Adds new encrypted entries for the caller, ensuring sequential order."
         ],
-        "label": "get_entry_count_by_account_id",
-        "mutates": false,
+        "label": "add_entries",
+        "mutates": true,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
-          "type": 13
+          "displayName": ["ink", "MessageResult"],
+          "type": 9
         },
-        "selector": "0x09c6a284"
-      },
-      {
-        "args": [],
-        "default": false,
-        "docs": [
-          " Retrieves the entry count for the caller's account."
-        ],
-        "label": "get_entry_count_for_caller",
-        "mutates": false,
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
-          "type": 13
-        },
-        "selector": "0x81e7a2e8"
+        "selector": "0xa70ec9e5"
       },
       {
         "args": [
           {
             "label": "account_id",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [" Retrieves the number of entries for a given account ID."],
+        "label": "get_entry_count",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": ["ink", "MessageResult"],
+          "type": 16
+        },
+        "selector": "0xc280e22d"
+      },
+      {
+        "args": [
+          {
+            "label": "account_id",
+            "type": {
+              "displayName": ["AccountId"],
               "type": 0
             }
           },
           {
             "label": "index",
             "type": {
-              "displayName": [
-                "u32"
-              ],
+              "displayName": ["u32"],
               "type": 5
             }
           }
@@ -279,48 +302,62 @@
         "docs": [
           " Retrieves an encrypted entry by index for a given account ID."
         ],
-        "label": "get_entry_by_account_id",
+        "label": "get_entry",
         "mutates": false,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
-          "type": 15
+          "displayName": ["ink", "MessageResult"],
+          "type": 18
         },
-        "selector": "0xdd50e3b8"
+        "selector": "0x31bf3920"
       },
       {
         "args": [
           {
-            "label": "index",
+            "label": "account_id",
             "type": {
-              "displayName": [
-                "u32"
-              ],
+              "displayName": ["AccountId"],
+              "type": 0
+            }
+          },
+          {
+            "label": "start_index",
+            "type": {
+              "displayName": ["u32"],
+              "type": 5
+            }
+          },
+          {
+            "label": "max_num",
+            "type": {
+              "displayName": ["u32"],
               "type": 5
             }
           }
         ],
         "default": false,
         "docs": [
-          " Retrieves an encrypted entry by index for the caller's account."
+          " Retrieves the encrypted entries requested for a given account ID."
         ],
-        "label": "get_entry_for_caller",
+        "label": "get_entries",
         "mutates": false,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
-          "type": 15
+          "displayName": ["ink", "MessageResult"],
+          "type": 21
         },
-        "selector": "0x999f076a"
+        "selector": "0xacd52579"
       },
       {
-        "args": [],
+        "args": [
+          {
+            "label": "encryption_key_hash",
+            "type": {
+              "displayName": ["Vec"],
+              "type": 4
+            }
+          }
+        ],
         "default": false,
         "docs": [
           " Resets the caller's account, setting their entry count to zero."
@@ -329,10 +366,7 @@
         "mutates": true,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
+          "displayName": ["ink", "MessageResult"],
           "type": 9
         },
         "selector": "0xe8db5848"
@@ -340,20 +374,28 @@
       {
         "args": [],
         "default": false,
-        "docs": [
-          " Retrieves the contract owner's account ID."
-        ],
+        "docs": [" Retrieves the contract owner's account ID."],
         "label": "get_owner",
         "mutates": false,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
-          "type": 18
+          "displayName": ["ink", "MessageResult"],
+          "type": 24
         },
         "selector": "0x07fcd0b1"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [" Retrieves the contract owner's account ID."],
+        "label": "get_owner_result",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": ["ink", "MessageResult"],
+          "type": 25
+        },
+        "selector": "0xaf9e84a8"
       },
       {
         "args": [],
@@ -372,11 +414,8 @@
         "mutates": false,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
-          "type": 19
+          "displayName": ["ink", "MessageResult"],
+          "type": 27
         },
         "selector": "0x2c075632"
       },
@@ -385,9 +424,7 @@
           {
             "label": "latest",
             "type": {
-              "displayName": [
-                "u8"
-              ],
+              "displayName": ["u8"],
               "type": 2
             }
           }
@@ -400,10 +437,7 @@
         "mutates": true,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
+          "displayName": ["ink", "MessageResult"],
           "type": 9
         },
         "selector": "0x70bae51b"
@@ -413,10 +447,8 @@
           {
             "label": "latest",
             "type": {
-              "displayName": [
-                "Vec"
-              ],
-              "type": 4
+              "displayName": ["u32"],
+              "type": 5
             }
           }
         ],
@@ -428,10 +460,7 @@
         "mutates": true,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
+          "displayName": ["ink", "MessageResult"],
           "type": 9
         },
         "selector": "0xfc0b8fc5"
@@ -441,9 +470,7 @@
           {
             "label": "new_owner",
             "type": {
-              "displayName": [
-                "AccountId"
-              ],
+              "displayName": ["AccountId"],
               "type": 0
             }
           }
@@ -456,10 +483,7 @@
         "mutates": true,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
+          "displayName": ["ink", "MessageResult"],
           "type": 9
         },
         "selector": "0x367facd6"
@@ -469,25 +493,18 @@
           {
             "label": "new_fee",
             "type": {
-              "displayName": [
-                "Balance"
-              ],
+              "displayName": ["Balance"],
               "type": 3
             }
           }
         ],
         "default": false,
-        "docs": [
-          " Updates account creation fee, owner-restricted."
-        ],
+        "docs": [" Updates account creation fee, owner-restricted."],
         "label": "set_account_creation_fee",
         "mutates": true,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
+          "displayName": ["ink", "MessageResult"],
           "type": 9
         },
         "selector": "0xac0488cc"
@@ -495,35 +512,25 @@
       {
         "args": [],
         "default": false,
-        "docs": [
-          " Gets the smart contract's balance."
-        ],
+        "docs": [" Gets the smart contract's balance."],
         "label": "get_balance",
         "mutates": false,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
-          "type": 21
+          "displayName": ["ink", "MessageResult"],
+          "type": 29
         },
         "selector": "0xea817e65"
       },
       {
         "args": [],
         "default": false,
-        "docs": [
-          " Withdraws the smart contract's balance"
-        ],
+        "docs": [" Withdraws the smart contract's balance"],
         "label": "withdraw",
         "mutates": true,
         "payable": false,
         "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
+          "displayName": ["ink", "MessageResult"],
           "type": 9
         },
         "selector": "0x410fcc9d"
@@ -552,6 +559,20 @@
                 }
               },
               "name": "fee"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "leaf": {
+                      "key": "0x45eaa056",
+                      "ty": 4
+                    }
+                  },
+                  "root_key": "0x45eaa056"
+                }
+              },
+              "name": "encryption_key_hash"
             },
             {
               "layout": {
@@ -642,7 +663,7 @@
               "layout": {
                 "leaf": {
                   "key": "0x00000000",
-                  "ty": 4
+                  "ty": 5
                 }
               },
               "name": "latest_compatible_browser_extension_version"
@@ -668,11 +689,7 @@
             ]
           }
         },
-        "path": [
-          "ink_primitives",
-          "types",
-          "AccountId"
-        ]
+        "path": ["ink_primitives", "types", "AccountId"]
       }
     },
     {
@@ -757,9 +774,7 @@
             "type": 8
           }
         ],
-        "path": [
-          "Result"
-        ]
+        "path": ["Result"]
       }
     },
     {
@@ -783,10 +798,7 @@
             ]
           }
         },
-        "path": [
-          "ink_primitives",
-          "LangError"
-        ]
+        "path": ["ink_primitives", "LangError"]
       }
     },
     {
@@ -826,9 +838,7 @@
             "type": 8
           }
         ],
-        "path": [
-          "Result"
-        ]
+        "path": ["Result"]
       }
     },
     {
@@ -868,9 +878,7 @@
             "type": 11
           }
         ],
-        "path": [
-          "Result"
-        ]
+        "path": ["Result"]
       }
     },
     {
@@ -881,56 +889,36 @@
             "variants": [
               {
                 "index": 0,
-                "name": "UserDoesNotAgreeToTerms"
-              },
-              {
-                "index": 1,
                 "name": "AccountNotFound"
               },
               {
-                "index": 2,
+                "index": 1,
                 "name": "AccountAlreadyExists"
               },
               {
-                "index": 3,
+                "index": 2,
                 "name": "NotOwner"
               },
               {
-                "index": 4,
+                "index": 3,
                 "name": "InsufficientPayment"
               },
               {
-                "index": 5,
+                "index": 4,
                 "name": "IndexMismatch"
               },
               {
-                "index": 6,
-                "name": "EntriesAlreadyRemoved"
-              },
-              {
-                "index": 7,
+                "index": 5,
                 "name": "TransferFailed"
               }
             ]
           }
         },
-        "path": [
-          "keyvault",
-          "keyvault",
-          "Error"
-        ]
+        "path": ["keyvault", "keyvault", "Error"]
       }
     },
     {
       "id": 12,
-      "type": {
-        "def": {
-          "primitive": "bool"
-        }
-      }
-    },
-    {
-      "id": 13,
       "type": {
         "def": {
           "variant": {
@@ -938,7 +926,7 @@
               {
                 "fields": [
                   {
-                    "type": 14
+                    "type": 13
                   }
                 ],
                 "index": 0,
@@ -959,20 +947,116 @@
         "params": [
           {
             "name": "T",
-            "type": 14
+            "type": 13
           },
           {
             "name": "E",
             "type": 8
           }
         ],
-        "path": [
-          "Result"
-        ]
+        "path": ["Result"]
+      }
+    },
+    {
+      "id": 13,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 4
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 11
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 4
+          },
+          {
+            "name": "E",
+            "type": 11
+          }
+        ],
+        "path": ["Result"]
       }
     },
     {
       "id": 14,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 15
+          }
+        }
+      }
+    },
+    {
+      "id": 15,
+      "type": {
+        "def": {
+          "tuple": [4, 4]
+        }
+      }
+    },
+    {
+      "id": 16,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 17
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 8
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 17
+          },
+          {
+            "name": "E",
+            "type": 8
+          }
+        ],
+        "path": ["Result"]
+      }
+    },
+    {
+      "id": 17,
       "type": {
         "def": {
           "variant": {
@@ -1008,13 +1092,11 @@
             "type": 11
           }
         ],
-        "path": [
-          "Result"
-        ]
+        "path": ["Result"]
       }
     },
     {
-      "id": 15,
+      "id": 18,
       "type": {
         "def": {
           "variant": {
@@ -1022,7 +1104,7 @@
               {
                 "fields": [
                   {
-                    "type": 16
+                    "type": 19
                   }
                 ],
                 "index": 0,
@@ -1043,20 +1125,18 @@
         "params": [
           {
             "name": "T",
-            "type": 16
+            "type": 19
           },
           {
             "name": "E",
             "type": 8
           }
         ],
-        "path": [
-          "Result"
-        ]
+        "path": ["Result"]
       }
     },
     {
-      "id": 16,
+      "id": 19,
       "type": {
         "def": {
           "variant": {
@@ -1064,7 +1144,7 @@
               {
                 "fields": [
                   {
-                    "type": 17
+                    "type": 20
                   }
                 ],
                 "index": 0,
@@ -1085,20 +1165,18 @@
         "params": [
           {
             "name": "T",
-            "type": 17
+            "type": 20
           },
           {
             "name": "E",
             "type": 11
           }
         ],
-        "path": [
-          "Result"
-        ]
+        "path": ["Result"]
       }
     },
     {
-      "id": 17,
+      "id": 20,
       "type": {
         "def": {
           "composite": {
@@ -1116,15 +1194,101 @@
             ]
           }
         },
-        "path": [
-          "keyvault",
-          "keyvault",
-          "EncryptedEntry"
-        ]
+        "path": ["keyvault", "keyvault", "EncryptedEntry"]
       }
     },
     {
-      "id": 18,
+      "id": 21,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 22
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 8
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 22
+          },
+          {
+            "name": "E",
+            "type": 8
+          }
+        ],
+        "path": ["Result"]
+      }
+    },
+    {
+      "id": 22,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 23
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 11
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 23
+          },
+          {
+            "name": "E",
+            "type": 11
+          }
+        ],
+        "path": ["Result"]
+      }
+    },
+    {
+      "id": 23,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 20
+          }
+        }
+      }
+    },
+    {
+      "id": 24,
       "type": {
         "def": {
           "variant": {
@@ -1160,13 +1324,11 @@
             "type": 8
           }
         ],
-        "path": [
-          "Result"
-        ]
+        "path": ["Result"]
       }
     },
     {
-      "id": 19,
+      "id": 25,
       "type": {
         "def": {
           "variant": {
@@ -1174,7 +1336,7 @@
               {
                 "fields": [
                   {
-                    "type": 20
+                    "type": 26
                   }
                 ],
                 "index": 0,
@@ -1195,33 +1357,106 @@
         "params": [
           {
             "name": "T",
-            "type": 20
+            "type": 26
           },
           {
             "name": "E",
             "type": 8
           }
         ],
-        "path": [
-          "Result"
-        ]
+        "path": ["Result"]
       }
     },
     {
-      "id": 20,
+      "id": 26,
       "type": {
         "def": {
-          "tuple": [
-            2,
-            2,
-            0,
-            4
-          ]
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 0
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 11
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 0
+          },
+          {
+            "name": "E",
+            "type": 11
+          }
+        ],
+        "path": ["Result"]
+      }
+    },
+    {
+      "id": 27,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 28
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 8
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 28
+          },
+          {
+            "name": "E",
+            "type": 8
+          }
+        ],
+        "path": ["Result"]
+      }
+    },
+    {
+      "id": 28,
+      "type": {
+        "def": {
+          "tuple": [2, 2, 0, 5]
         }
       }
     },
     {
-      "id": 21,
+      "id": 29,
       "type": {
         "def": {
           "variant": {
@@ -1257,13 +1492,11 @@
             "type": 8
           }
         ],
-        "path": [
-          "Result"
-        ]
+        "path": ["Result"]
       }
     },
     {
-      "id": 22,
+      "id": 30,
       "type": {
         "def": {
           "composite": {
@@ -1275,15 +1508,11 @@
             ]
           }
         },
-        "path": [
-          "ink_primitives",
-          "types",
-          "Hash"
-        ]
+        "path": ["ink_primitives", "types", "Hash"]
       }
     },
     {
-      "id": 23,
+      "id": 31,
       "type": {
         "def": {
           "primitive": "u64"
@@ -1291,16 +1520,12 @@
       }
     },
     {
-      "id": 24,
+      "id": 32,
       "type": {
         "def": {
           "variant": {}
         },
-        "path": [
-          "ink_env",
-          "types",
-          "NoChainExtension"
-        ]
+        "path": ["ink_env", "types", "NoChainExtension"]
       }
     }
   ],
