@@ -105,7 +105,7 @@ const Headers = ({ setView }: HeadersProps) => {
   const [disabled, setDisabled] = useState<boolean>(false);
 
   return (
-    <HStack justifyContent={"space-around"} alignItems={"end"} py={4} mt={2}>
+    <HStack justifyContent={"space-around"} alignItems={"end"} px={4} mt={4}>
       <Icon
         colorScheme="primary"
         label="Creds"

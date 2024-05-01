@@ -2,11 +2,14 @@ import { Box, Heading } from "@chakra-ui/react";
 import { CustomButton } from "./CustomButton";
 import { Cred } from "../utils/credentials";
 import { Encrypted } from "../utils/encryption";
+import { Context } from "../hooks/useFiniteStateMachine";
+import { State } from "../side_panel/stateMachine";
 
 type SettingsProps = {
   creds: Cred[];
   encrypted: Encrypted[];
   jwk: JsonWebKey;
+  contextState: Context<State>;
 };
 
 const download = (data: Record<string, any>, filename: string) => {
@@ -31,9 +34,12 @@ const logOut = async () => {
   });
 };
 
-const Settings = ({ creds, encrypted, jwk }: SettingsProps) => {
+const Settings = ({ creds, encrypted, jwk, contextState }: SettingsProps) => {
   return (
     <Box display={"flex"} flexDirection={"column"} justifyContent={"end"}>
+      <Heading as={"h3"} mt={8} mb={4} textAlign={"center"} fontSize={"large"}>
+        Wallet address: {contextState?.context.walletAddress || "N/A"}
+      </Heading>
       {/* encryption key */}
       <Heading as={"h3"} mt={8} mb={4} textAlign={"center"} fontSize={"large"}>
         Encryption key
@@ -53,17 +59,17 @@ const Settings = ({ creds, encrypted, jwk }: SettingsProps) => {
       <CustomButton
         py={4}
         colorScheme="primary"
-        onClick={() => download(creds, "encrypted_credentials.json")}
+        onClick={() => download(encrypted, "encrypted_credentials.json")}
       >
-        Download credentials (encrypted version)
+        Download (encrypted) credentials
       </CustomButton>
       <CustomButton
         py={4}
         mt={4}
         colorScheme="secondary"
-        onClick={() => download(encrypted, "encrypted_credentials.json")}
+        onClick={() => download(creds, "unencrypted_credentials.json")}
       >
-        Download credentials (unencrypted version)
+        Download (unencrypted) credentials
       </CustomButton>
 
       {/* log out */}

@@ -100,6 +100,7 @@ const SidePanel: FC = () => {
           encrypted={encrypted}
           setEncrypted={setEncrypted}
           jwk={jwk as JsonWebKey}
+          contextState={contextState}
         />
       )}
 

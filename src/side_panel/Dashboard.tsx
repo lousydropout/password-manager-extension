@@ -1,12 +1,14 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Box, Heading } from "@chakra-ui/react";
+import { Box, HStack, Heading, Switch, Text } from "@chakra-ui/react";
 import { CustomButton } from "../components/CustomButton";
 import { NewCredsForm } from "../components/NewCredsForm";
-import { Cred, addEntry } from "../utils/credentials";
+import { Cred, addEntry, getCredsByURL } from "../utils/credentials";
 import { Headers, View } from "../components/Headers";
 import { Settings } from "../components/Settings";
 import { Encrypted, decrypt } from "../utils/encryption";
 import { Sync } from "../components/Sync";
+import { Context } from "../hooks/useFiniteStateMachine";
+import { State } from "./stateMachine";
 
 export type DashboardProps = {
   currentUrl: string;
@@ -16,6 +18,7 @@ export type DashboardProps = {
   encrypted: Encrypted[];
   setEncrypted: Dispatch<SetStateAction<Encrypted[]>>;
   jwk: JsonWebKey;
+  contextState: Context<State>;
 };
 
 export const Dashboard = ({
@@ -26,8 +29,68 @@ export const Dashboard = ({
   encrypted,
   setEncrypted,
   jwk,
+  contextState,
 }: DashboardProps) => {
   const [view, setView] = useState<View>("All Credentials");
+
+  const credentials = getCredsByURL(creds);
+  interface CredentialsProps {
+    credentials: { [key: string]: Cred[] };
+  }
+
+  const CredCard = ({ cred }: { cred: Cred }) => (
+    <Box p={4} borderWidth="1px" borderRadius="lg" my={4}>
+      <Text fontSize={"small"}>
+        username:{" "}
+        <Text as="span" fontWeight={700} fontSize={"medium"}>
+          {cred?.username || ""}
+        </Text>
+      </Text>
+      <Text fontSize={"small"}>
+        password:{" "}
+        <Text as="span" fontWeight={700} fontSize={"medium"}>
+          {cred?.password || ""}
+        </Text>
+      </Text>
+      <Text fontSize={"small"}>
+        description:{" "}
+        <Text as="span" fontWeight={700} fontSize={"medium"}>
+          {cred?.description || ""}
+        </Text>
+      </Text>
+    </Box>
+  );
+
+  const CredCardsForUrl = ({ credentials }: CredentialsProps) => (
+    <Box>
+      {Object.entries(credentials).map(([url, creds]) => (
+        <Box key={url} pt={2}>
+          <Heading
+            as={"h2"}
+            fontSize={"xx-large"}
+            fontWeight="bold"
+            textAlign={"center"}
+            // borderBottom="2px solid grey"
+            mb={2}
+          >
+            {url}
+          </Heading>
+
+          {creds.map((cred, index) => (
+            <CredCard cred={cred} key={index} />
+          ))}
+
+          {creds.length === 0 && (
+            <Box border={"1px solid grey"} borderRadius={"lg"} p={4} mt={4}>
+              <Text textAlign={"center"} fontSize={"large"}>
+                No credentials found for this URL
+              </Text>
+            </Box>
+          )}
+        </Box>
+      ))}
+    </Box>
+  );
 
   const onSave = async (data: Cred) => {
     let entry: Cred = { ...data, onChain: false };
@@ -99,10 +162,10 @@ export const Dashboard = ({
   return (
     <>
       <Headers setView={setView} />
-      <Box px={4} py={12} display={"flex"} flexDir={"column"} gap={4}>
-        <Heading as={"h3"} mb={8} textAlign={"center"}>
+      <Box px={4} py={8} display={"flex"} flexDir={"column"} gap={4}>
+        {/* <Heading as={"h3"} mb={8} textAlign={"center"}>
           {view}
-        </Heading>
+        </Heading> */}
 
         {/* Add form for new passwords */}
         {view === "New Credential" && (
@@ -116,23 +179,64 @@ export const Dashboard = ({
         )}
 
         {view === "Settings" && (
-          <Settings creds={creds} encrypted={encrypted} jwk={jwk} />
+          <Settings
+            creds={creds}
+            encrypted={encrypted}
+            jwk={jwk}
+            contextState={contextState}
+          />
         )}
 
         {view === "Sync" && <Sync encrypted={encrypted} />}
 
         {(view === "Current Page" || view === "All Credentials") && (
-          <CustomButton
-            colorScheme="secondary"
-            onClick={() => setView((prev) => toggleCredView(prev))}
-          >
-            See {view === "All Credentials" ? "current page's" : "all"}
-          </CustomButton>
-        )}
+          <>
+            <Heading
+              as={"h1"}
+              fontSize={"xxx-large"}
+              fontWeight="bold"
+              textAlign={"center"}
+            >
+              Credentials
+            </Heading>
+            <HStack
+              spacing={4}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+              borderBottom="2px solid grey"
+              mb={2}
+            >
+              <Heading
+                as={"h2"}
+                fontSize={"xx-large"}
+                fontWeight="bold"
+                textAlign={"center"}
+              >
+                Show {view === "All Credentials" ? "All" : "Current"}
+              </Heading>
 
-        <Heading fontSize={"medium"} as={"pre"}>
-          Creds: {JSON.stringify(creds, null, 4)}
-        </Heading>
+              <Switch
+                size={"lg"}
+                isChecked={view === "All Credentials"}
+                onChange={() => setView((prev) => toggleCredView(prev))}
+                colorScheme={"purple"}
+              />
+            </HStack>
+            {/* <CustomButton
+              colorScheme="secondary"
+              onClick={() => setView((prev) => toggleCredView(prev))}
+            >
+              See {view === "All Credentials" ? "current page's" : "all"}
+            </CustomButton> */}
+            {view === "Current Page" ? (
+              <CredCardsForUrl
+                credentials={{ [currentUrl]: credentials[currentUrl] ?? [] }}
+              />
+            ) : (
+              <CredCardsForUrl credentials={credentials} />
+            )}
+          </>
+        )}
       </Box>
     </>
   );
