@@ -9,6 +9,7 @@ import { Encrypted, decrypt } from "../utils/encryption";
 import { Sync } from "../components/Sync";
 import { Context } from "../hooks/useFiniteStateMachine";
 import { State } from "./stateMachine";
+import { CredentialCard } from "../components/CredentialCard";
 
 export type DashboardProps = {
   currentUrl: string;
@@ -38,29 +39,6 @@ export const Dashboard = ({
     credentials: { [key: string]: Cred[] };
   }
 
-  const CredCard = ({ cred }: { cred: Cred }) => (
-    <Box p={4} borderWidth="1px" borderRadius="lg" my={4}>
-      <Text fontSize={"small"}>
-        username:{" "}
-        <Text as="span" fontWeight={700} fontSize={"medium"}>
-          {cred?.username || ""}
-        </Text>
-      </Text>
-      <Text fontSize={"small"}>
-        password:{" "}
-        <Text as="span" fontWeight={700} fontSize={"medium"}>
-          {cred?.password || ""}
-        </Text>
-      </Text>
-      <Text fontSize={"small"}>
-        description:{" "}
-        <Text as="span" fontWeight={700} fontSize={"medium"}>
-          {cred?.description || ""}
-        </Text>
-      </Text>
-    </Box>
-  );
-
   const CredCardsForUrl = ({ credentials }: CredentialsProps) => (
     <Box>
       {Object.entries(credentials).map(([url, creds]) => (
@@ -77,7 +55,7 @@ export const Dashboard = ({
           </Heading>
 
           {creds.map((cred, index) => (
-            <CredCard cred={cred} key={index} />
+            <CredentialCard cred={cred} key={index} />
           ))}
 
           {creds.length === 0 && (

@@ -1,32 +1,49 @@
 import { Box, HStack } from "@chakra-ui/react";
-import { FC } from "react";
 import { CustomInput } from "./CustomInput";
 import { CustomButton } from "./CustomButton";
+import { Cred } from "../utils/credentials";
+import { CustomTextArea } from "./CustomTextArea";
+import { useState } from "react";
+import { CustomPasswordInput } from "./CustomPasswordInput";
 
-const CredentialCard: FC = () => {
+const CredentialCard = ({ cred }: { cred: Cred }) => {
+  const [credState, _setCredState] = useState<Cred>(cred);
+
   return (
     <Box
       border={"1px"}
       rounded={"md"}
       p={4}
+      my={4}
       display={"flex"}
       flexDir={"column"}
       alignItems={"end"}
     >
       <CustomInput
-        hasLabel={false}
-        variant="unstyled"
-        fontSize={"xl"}
-        textAlign={"center"}
+        label={"username/email"}
+        type="text"
+        value={credState?.username || ""}
+        onChange={(e) => _setCredState({ ...cred, username: e.target.value })}
       />
+      <CustomPasswordInput
+        label={"password"}
+        value={credState?.password || ""}
+        onChange={(e) => _setCredState({ ...cred, password: e.target.value })}
+      />
+
+      <CustomTextArea
+        value={credState?.description || ""}
+        label={"description"}
+        onChange={(e) =>
+          _setCredState({ ...cred, description: e.target.value })
+        }
+      />
+
       <Box my={4}></Box>
-      <CustomInput label={"username/email"} type="text" />
-      <CustomInput label={"password"} type="password" />
-      <Box my={4}></Box>
-      <HStack>
+      {/* <HStack>
         <CustomButton colorScheme={"warning"}>Delete</CustomButton>
         <CustomButton colorScheme={"accent"}>Update</CustomButton>
-      </HStack>
+      </HStack> */}
     </Box>
   );
 };
