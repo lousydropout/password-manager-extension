@@ -157,6 +157,49 @@ export async function merge(source: Cred[], onChain: Cred[]): Promise<Cred[]> {
   return result;
 }
 
+export function getEntries(entries: Cred[]): Cred[][] {
+  // Step 1: Initialize chains
+  const chains: Cred[][] = [];
+
+  // Step 2: Track which indices have been processed
+  const seen = new Set();
+
+  // Step 3: Iterate through the array
+  entries.forEach((obj) => {
+    if (obj.prev === -1 && !seen.has(obj.curr)) {
+      const chain = [];
+      let current: Cred | null = obj;
+
+      // Follow the revisions chain using direct indexing
+      while (current) {
+        chain.push(current);
+        seen.add(current.curr);
+        current =
+          current.prev !== -1 && !seen.has(current.prev)
+            ? entries[current.prev]
+            : null;
+      }
+
+      // Add the completed chain to the chains list
+      chains.push(chain);
+    }
+  });
+  return chains;
+}
+
+export function getEntriesByURL(entries: Cred[]): Record<string, Cred[][]> {
+  const results: Record<string, Cred[][]> = {};
+
+  getEntries(entries).forEach((entry) => {
+    if (!results[entry[0].url]) {
+      results[entry[0].url] = [];
+    }
+    results[entry[0].url].push(entry);
+  });
+
+  return results;
+}
+
 export function getCredsByURL(entries: Cred[]): Record<string, Cred[]> {
   const successors = getSuccessors(entries);
   const results: Record<string, Cred[]> = {};
