@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Box, HStack, Heading, Switch, Text } from "@chakra-ui/react";
-import { CustomButton } from "../components/CustomButton";
 import { NewCredsForm } from "../components/NewCredsForm";
 import {
   Cred,
@@ -107,17 +106,6 @@ export const Dashboard = ({
     getCiphertexts();
   }, [creds]);
 
-  // useEffect(() => {
-  //   console.log("creds: ", creds, "encrypted: ", encrypted);
-  //   getCiphertexts();
-  // }, [creds]);
-
-  // // get ciphertexts from creds and set them to encrypted
-  // useEffect(() => {
-  //   console.log("creds: ", creds, "encrypted: ", encrypted);
-  //   getCiphertexts();
-  // }, []);
-
   useEffect(() => {
     console.log("encrypted: ", encrypted);
   }, [encrypted]);
@@ -161,10 +149,6 @@ export const Dashboard = ({
     <>
       <Headers setView={setView} queryOnChainIfNeeded={queryOnChainIfNeeded} />
       <Box px={4} py={8} display={"flex"} flexDir={"column"} gap={4}>
-        {/* <Heading as={"h3"} mb={8} textAlign={"center"}>
-          {view}
-        </Heading> */}
-
         {/* Add form for new passwords */}
         {view === "New Credential" && (
           <NewCredsForm
@@ -220,12 +204,7 @@ export const Dashboard = ({
                 colorScheme={"purple"}
               />
             </HStack>
-            {/* <CustomButton
-              colorScheme="secondary"
-              onClick={() => setView((prev) => toggleCredView(prev))}
-            >
-              See {view === "All Credentials" ? "current page's" : "all"}
-            </CustomButton> */}
+
             {view === "Current Page" ? (
               <CredCardsForUrl
                 credentials={{ [currentUrl]: credentials[currentUrl] ?? [] }}

@@ -4,7 +4,6 @@ import { CustomButton } from "./CustomButton";
 import { Cred } from "../utils/credentials";
 import { CustomTextArea } from "./CustomTextArea";
 import { useState } from "react";
-import { CustomPasswordInput } from "./CustomPasswordInput";
 
 const CredentialCard = ({ cred }: { cred: Cred }) => {
   const [credState, _setCredState] = useState<Cred>(cred);
@@ -23,26 +22,30 @@ const CredentialCard = ({ cred }: { cred: Cred }) => {
         label={"username/email"}
         type="text"
         value={credState?.username || ""}
-        onChange={(e) => _setCredState({ ...cred, username: e.target.value })}
+        // onChange={(e) => _setCredState({ ...cred, username: e.target.value })}
         copyable={true}
       />
-      <CustomPasswordInput
+      <CustomInput
         label={"password"}
+        type="password"
+        isPassword={true}
         value={credState?.password || ""}
-        onChange={(e) => _setCredState({ ...cred, password: e.target.value })}
+        // onChange={(e) => _setCredState({ ...cred, password: e.target.value })}
       />
 
       <CustomTextArea
         value={credState?.description || ""}
         label={"description"}
-        onChange={(e) =>
-          _setCredState({ ...cred, description: e.target.value })
+        isReadOnly={true}
+        onChange={
+          () => {}
+          // _setCredState({ ...cred, description: e.target.value })
         }
       />
 
       <Box my={4}></Box>
       <HStack>
-        <CustomButton colorScheme={"accent"}>Update</CustomButton>
+        <CustomButton colorScheme={"accent"}>Edit</CustomButton>
         <CustomButton colorScheme={"warning"}>Delete</CustomButton>
       </HStack>
     </Box>

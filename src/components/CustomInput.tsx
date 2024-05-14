@@ -10,12 +10,13 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import { colors } from "../utils/colors";
-import { CopyIcon } from "@chakra-ui/icons";
+import { CopyIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 
 export interface CustomInputProps extends InputProps {
   value?: string;
   copyable?: boolean;
+  isPassword?: boolean;
   leftText?: string;
   hasLabel?: boolean;
   label?: string;
@@ -28,6 +29,7 @@ export interface CustomInputProps extends InputProps {
 const CustomInput: React.FC<CustomInputProps> = ({
   value = "",
   copyable = false,
+  isPassword = false,
   leftText = "",
   isReadOnly = false,
   variant = "filled",
@@ -36,12 +38,17 @@ const CustomInput: React.FC<CustomInputProps> = ({
   label,
   ...rest
 }) => {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
 
   const handleCopyInput = () => {
     navigator.clipboard.writeText(value);
     setShowTooltip(true);
     setTimeout(() => setShowTooltip(false), 1000);
+  };
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -59,7 +66,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
         <Input
           value={value}
           variant={variant}
-          type={type}
+          type={!isPassword || showPassword ? "text" : "password"}
           bgColor={"transparent"}
           _hover={{ bgColor: "transparent" }}
           _active={{ bgColor: "transparent" }}
@@ -70,7 +77,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
           pl={2}
           {...rest}
         />
-        {copyable && (
+        {(copyable || isPassword) && (
           <>
             <InputRightElement
               display={"flex"}
@@ -78,6 +85,25 @@ const CustomInput: React.FC<CustomInputProps> = ({
               alignItems={"center"}
               gap={1}
             >
+              {isPassword && (
+                <Button
+                  size="md"
+                  backgroundColor={"transparent"}
+                  onClick={handleTogglePassword}
+                  _hover={{ backgroundColor: "transparent" }}
+                  _focus={{ outline: "none" }}
+                  _focusVisible={{
+                    outline: "none",
+                    backgroundColor: "purple.600",
+                  }}
+                >
+                  {showPassword ? (
+                    <ViewIcon color={"purple.200"} />
+                  ) : (
+                    <ViewOffIcon color={"purple.200"} />
+                  )}
+                </Button>
+              )}
               <Button
                 size="md"
                 backgroundColor={"transparent"}
