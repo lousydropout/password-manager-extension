@@ -157,7 +157,7 @@ export async function merge(source: Cred[], onChain: Cred[]): Promise<Cred[]> {
   return result;
 }
 
-export function getEntries(entries: Cred[]): Cred[][] {
+function organizeIntoChains(entries: Cred[]): Cred[][] {
   // Step 1: Initialize chains
   const chains: Cred[][] = [];
 
@@ -190,11 +190,11 @@ export function getEntries(entries: Cred[]): Cred[][] {
 export function getEntriesByURL(entries: Cred[]): Record<string, Cred[][]> {
   const results: Record<string, Cred[][]> = {};
 
-  getEntries(entries).forEach((entry) => {
-    if (!results[entry[0].url]) {
-      results[entry[0].url] = [];
+  organizeIntoChains(entries).forEach((chain) => {
+    if (!results[chain[0].url]) {
+      results[chain[0].url] = [];
     }
-    results[entry[0].url].push(entry);
+    results[chain[0].url].push(chain);
   });
 
   return results;
