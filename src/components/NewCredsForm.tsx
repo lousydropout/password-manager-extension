@@ -145,7 +145,7 @@ const NewCredsForm: FC<NewCredsFormProps> = ({
                 setNumbers(/[0-9]/.test(newPassword));
                 setLowercase(/[a-z]/.test(newPassword));
                 setUppercase(/[A-Z]/.test(newPassword));
-                setSymbols(/[!@#$%^&*(),.?":{}|<>]/.test(newPassword));
+                setSymbols(/[!@#$%^&*()-_]/.test(newPassword));
                 setLength(newPassword.length);
                 setPassword(newPassword);
               }}
