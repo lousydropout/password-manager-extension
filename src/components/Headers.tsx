@@ -99,9 +99,10 @@ export type View =
 
 type HeadersProps = {
   setView: Dispatch<SetStateAction<View>>;
+  queryOnChainIfNeeded: () => Promise<void>;
 };
 
-const Headers = ({ setView }: HeadersProps) => {
+const Headers = ({ setView, queryOnChainIfNeeded }: HeadersProps) => {
   const [disabled, setDisabled] = useState<boolean>(false);
 
   return (
@@ -128,6 +129,7 @@ const Headers = ({ setView }: HeadersProps) => {
         onClick={() => {
           setDisabled(true);
           setTimeout(() => setDisabled(false), 10_000);
+          queryOnChainIfNeeded();
         }}
       >
         <Download color="purple.200" />

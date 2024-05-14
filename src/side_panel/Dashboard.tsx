@@ -13,6 +13,7 @@ import { CredentialCard } from "../components/CredentialCard";
 
 export type DashboardProps = {
   currentUrl: string;
+  queryOnChainIfNeeded: () => Promise<void>;
   creds: Cred[];
   setCreds: Dispatch<SetStateAction<Cred[]>>;
   cryptoKey: CryptoKey;
@@ -24,6 +25,7 @@ export type DashboardProps = {
 
 export const Dashboard = ({
   currentUrl,
+  queryOnChainIfNeeded,
   creds,
   setCreds,
   cryptoKey,
@@ -35,40 +37,49 @@ export const Dashboard = ({
   const [view, setView] = useState<View>("All Credentials");
 
   const credentials = getCredsByURL(creds);
+  console.log("credentials: ", credentials);
+
   interface CredentialsProps {
     credentials: { [key: string]: Cred[] };
   }
 
-  const CredCardsForUrl = ({ credentials }: CredentialsProps) => (
-    <Box>
-      {Object.entries(credentials).map(([url, creds]) => (
-        <Box key={url} pt={2}>
-          <Heading
-            as={"h2"}
-            fontSize={"xx-large"}
-            fontWeight="bold"
-            textAlign={"center"}
-            // borderBottom="2px solid grey"
-            mb={2}
-          >
-            {url}
-          </Heading>
+  const CredCardsForUrl = ({ credentials }: CredentialsProps) => {
+    const sortedKeys = Object.keys(credentials).sort();
 
-          {creds.map((cred, index) => (
-            <CredentialCard cred={cred} key={index} />
-          ))}
+    return (
+      <Box>
+        {sortedKeys.map((url) => {
+          const creds = credentials[url];
+          return (
+            <Box key={url} pt={2}>
+              <Heading
+                as={"h2"}
+                fontSize={"xx-large"}
+                fontWeight="bold"
+                textAlign={"center"}
+                // borderBottom="2px solid grey"
+                mb={2}
+              >
+                {url}
+              </Heading>
 
-          {creds.length === 0 && (
-            <Box border={"1px solid grey"} borderRadius={"lg"} p={4} mt={4}>
-              <Text textAlign={"center"} fontSize={"large"}>
-                No credentials found for this URL
-              </Text>
+              {creds.map((cred, index) => (
+                <CredentialCard cred={cred} key={index} />
+              ))}
+
+              {creds.length === 0 && (
+                <Box border={"1px solid grey"} borderRadius={"lg"} p={4} mt={4}>
+                  <Text textAlign={"center"} fontSize={"large"}>
+                    No credentials found for this URL
+                  </Text>
+                </Box>
+              )}
             </Box>
-          )}
-        </Box>
-      ))}
-    </Box>
-  );
+          );
+        })}
+      </Box>
+    );
+  };
 
   const onSave = async (data: Cred) => {
     let entry: Cred = { ...data, onChain: false };
@@ -139,7 +150,7 @@ export const Dashboard = ({
 
   return (
     <>
-      <Headers setView={setView} />
+      <Headers setView={setView} queryOnChainIfNeeded={queryOnChainIfNeeded} />
       <Box px={4} py={8} display={"flex"} flexDir={"column"} gap={4}>
         {/* <Heading as={"h3"} mb={8} textAlign={"center"}>
           {view}

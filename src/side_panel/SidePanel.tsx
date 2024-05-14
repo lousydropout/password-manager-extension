@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { useFiniteStateMachine } from "../hooks/useFiniteStateMachine";
-import { Heading } from "@chakra-ui/react";
+import { Button, Heading } from "@chakra-ui/react";
 import { useCurrentTab } from "../hooks/useCurrentTab";
 import { useCryptoKeyManager } from "../hooks/useCryptoKey";
 import { hash } from "../utils/encryption";
@@ -29,10 +29,8 @@ const SidePanel: FC = () => {
   const [onChain, setOnChain] = useChromeStorageLocal<Cred[]>("onChain", []);
 
   const getNumOnChain = async (cryptoKey: CryptoKey) => {
-    console.log("getNumOnChain");
     // If the user is not logged in or there are already entries on chain, return
     if (!contextState?.context.walletAddress) return;
-    console.log("getNumOnChain");
 
     const num = (await queryData("get-entry-count", {
       accountId: contextState?.context.walletAddress,
@@ -66,6 +64,11 @@ const SidePanel: FC = () => {
     }
   };
 
+  const queryOnChainIfNeeded = async () => {
+    console.log("queryOnChainIfNeeded");
+    await getNumOnChain(cryptoKey as CryptoKey);
+  };
+
   useEffect(() => {
     if (!cryptoKey) return;
     getNumOnChain(cryptoKey as CryptoKey);
@@ -93,6 +96,7 @@ const SidePanel: FC = () => {
       )}
       {contextState?.state === "LOGGED_IN" && (
         <Dashboard
+          queryOnChainIfNeeded={queryOnChainIfNeeded}
           currentUrl={currentUrl as string}
           creds={creds}
           setCreds={setCreds}
@@ -103,6 +107,17 @@ const SidePanel: FC = () => {
           contextState={contextState}
         />
       )}
+
+      <Button
+        onClick={() => {
+          console.log("[contextState]: ", contextState);
+          console.log("[encrypted]: ", encrypted);
+          console.log("[creds]: ", creds);
+          console.log("[onChain]: ", onChain);
+        }}
+      >
+        Log states
+      </Button>
 
       <Heading as={"pre"} fontSize={"medium"} mx={4} my={12} textAlign={"left"}>
         Context: {JSON.stringify(contextState, null, 4)}
