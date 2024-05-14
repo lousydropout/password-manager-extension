@@ -91,20 +91,23 @@ const CredentialCard = ({ cred }: { cred: Cred }) => {
       </Box>
       <Modal isCentered isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader backgroundColor="hsl(262, 8%, 15%)">
-            Deletion
-          </ModalHeader>
+        <ModalContent
+          p={8}
+          backgroundColor="hsl(262, 8%, 15%)"
+          borderRadius={10}
+        >
+          <ModalHeader> </ModalHeader>
           <ModalCloseButton />
-          <ModalBody backgroundColor="hsl(262, 8%, 15%)">
+          <ModalBody fontSize={"x-large"} textAlign={"center"}>
             Are you sure you want to delete this credential?
           </ModalBody>
 
-          <ModalFooter backgroundColor="hsl(262, 8%, 15%)" gap={2}>
+          <ModalFooter flexDir={"column"}>
             <CustomButton colorScheme={"accent"}>
-              Yes, please delete this.
+              Yes, delete this credential.
             </CustomButton>
             <CustomButton
+              mt={4}
               colorScheme={"warning"}
               onClick={() => {
                 setCredState(cred); // undoes changes
