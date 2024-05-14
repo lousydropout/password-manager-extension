@@ -24,6 +24,7 @@ const CredentialCard = ({ cred }: { cred: Cred }) => {
         type="text"
         value={credState?.username || ""}
         onChange={(e) => _setCredState({ ...cred, username: e.target.value })}
+        copyable={true}
       />
       <CustomPasswordInput
         label={"password"}
@@ -40,10 +41,10 @@ const CredentialCard = ({ cred }: { cred: Cred }) => {
       />
 
       <Box my={4}></Box>
-      {/* <HStack>
-        <CustomButton colorScheme={"warning"}>Delete</CustomButton>
+      <HStack>
         <CustomButton colorScheme={"accent"}>Update</CustomButton>
-      </HStack> */}
+        <CustomButton colorScheme={"warning"}>Delete</CustomButton>
+      </HStack>
     </Box>
   );
 };

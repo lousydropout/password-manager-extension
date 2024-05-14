@@ -2,7 +2,12 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Box, HStack, Heading, Switch, Text } from "@chakra-ui/react";
 import { CustomButton } from "../components/CustomButton";
 import { NewCredsForm } from "../components/NewCredsForm";
-import { Cred, addEntry, getCredsByURL } from "../utils/credentials";
+import {
+  Cred,
+  addEntry,
+  getCredsByURL,
+  getEntriesByURL,
+} from "../utils/credentials";
 import { Headers, View } from "../components/Headers";
 import { Settings } from "../components/Settings";
 import { Encrypted, decrypt } from "../utils/encryption";
@@ -37,7 +42,11 @@ export const Dashboard = ({
   const [view, setView] = useState<View>("All Credentials");
 
   const credentials = getCredsByURL(creds);
+  console.log("creds: ", creds);
   console.log("credentials: ", credentials);
+
+  const credsByUrl = getEntriesByURL(creds);
+  console.log("credsByUrl: ", credsByUrl);
 
   interface CredentialsProps {
     credentials: { [key: string]: Cred[] };
@@ -49,7 +58,7 @@ export const Dashboard = ({
     return (
       <Box>
         {sortedKeys.map((url) => {
-          const creds = credentials[url];
+          const credsByUrl = credentials[url];
           return (
             <Box key={url} pt={2}>
               <Heading
@@ -63,11 +72,11 @@ export const Dashboard = ({
                 {url}
               </Heading>
 
-              {creds.map((cred, index) => (
+              {credsByUrl.map((cred, index) => (
                 <CredentialCard cred={cred} key={index} />
               ))}
 
-              {creds.length === 0 && (
+              {credsByUrl.length === 0 && (
                 <Box border={"1px solid grey"} borderRadius={"lg"} p={4} mt={4}>
                   <Text textAlign={"center"} fontSize={"large"}>
                     No credentials found for this URL
