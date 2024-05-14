@@ -171,9 +171,9 @@ const NewCredsForm: FC<NewCredsFormProps> = ({
                 }}
               >
                 {showPassword ? (
-                  <ViewOffIcon color={"purple.200"} />
-                ) : (
                   <ViewIcon color={"purple.200"} />
+                ) : (
+                  <ViewOffIcon color={"purple.200"} />
                 )}
               </Button>
               <Button
@@ -266,13 +266,11 @@ const NewCredsForm: FC<NewCredsFormProps> = ({
             />
           </HStack>
         </FormControl>
-        <FormControl>
-          <FormLabel>Description</FormLabel>
-          <CustomTextArea
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter description (optional)"
-          />
-        </FormControl>
+        <CustomTextArea
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter description (optional)"
+          label="Description"
+        />
 
         <CustomButton
           type="submit"
