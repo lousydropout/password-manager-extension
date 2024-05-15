@@ -1,10 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useChromeStorageLocal } from "./useChromeLocalStorage";
-import { useCurrentTab } from "./useCurrentTab";
-
-const URL = "http://localhost:3000";
-
-type MessageType = "FROM_EXTENSION";
 
 export type Context<State> = {
   state: State;

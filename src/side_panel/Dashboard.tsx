@@ -15,6 +15,7 @@ import { Sync } from "../components/Sync";
 import { Context } from "../hooks/useFiniteStateMachine";
 import { State } from "./stateMachine";
 import { CredentialCard } from "../components/CredentialCard";
+import { URL } from "../side_panel/url";
 
 export type DashboardProps = {
   currentUrl: string;
@@ -150,7 +151,7 @@ export const Dashboard = ({
 
   useEffect(() => {
     if (view === "Sync") {
-      chrome.tabs.create({ url: "http://localhost:3000/sync" });
+      chrome.tabs.create({ url: `${URL}/sync` });
     }
   }, [view]);
 
