@@ -4,6 +4,7 @@ import { NewCredsForm } from "../components/NewCredsForm";
 import {
   Cred,
   addEntry,
+  deleteEntry,
   getCredsByURL,
   getEntriesByURL,
 } from "../utils/credentials";
@@ -49,9 +50,10 @@ export const Dashboard = ({
 
   interface CredentialsProps {
     credentials: { [key: string]: Cred[] };
+    onDelete: (index: number) => Promise<void>;
   }
 
-  const CredCardsForUrl = ({ credentials }: CredentialsProps) => {
+  const CredCardsForUrl = ({ credentials, onDelete }: CredentialsProps) => {
     const sortedKeys = Object.keys(credentials).sort();
 
     return (
@@ -65,15 +67,17 @@ export const Dashboard = ({
                 fontSize={"xx-large"}
                 fontWeight="bold"
                 textAlign={"center"}
-                // borderBottom="2px solid grey"
                 mb={2}
               >
                 {url}
               </Heading>
 
-              {credsByUrl.map((cred, index) => (
-                <CredentialCard cred={cred} key={index} />
-              ))}
+              {credsByUrl.map((cred, index) => {
+                if (cred.isDeleted) return null;
+                return (
+                  <CredentialCard cred={cred} key={index} onDelete={onDelete} />
+                );
+              })}
 
               {credsByUrl.length === 0 && (
                 <Box border={"1px solid grey"} borderRadius={"lg"} p={4} mt={4}>
@@ -94,6 +98,14 @@ export const Dashboard = ({
     const result = await addEntry(cryptoKey, creds, entry);
     setCreds(result);
   };
+
+  const onDelete = async (index: number) => {
+    const result = await deleteEntry(cryptoKey, creds, index);
+    setCreds(result);
+    console.log("creds: ", creds);
+    console.log("result: ", result);
+  };
+
   const getCiphertexts = async () => {
     if (creds.length > encrypted.length) {
       setEncrypted(creds.map((cred) => cred.ciphertext as Encrypted));
@@ -208,9 +220,10 @@ export const Dashboard = ({
             {view === "Current Page" ? (
               <CredCardsForUrl
                 credentials={{ [currentUrl]: credentials[currentUrl] ?? [] }}
+                onDelete={onDelete}
               />
             ) : (
-              <CredCardsForUrl credentials={credentials} />
+              <CredCardsForUrl credentials={credentials} onDelete={onDelete} />
             )}
           </>
         )}

@@ -11,6 +11,7 @@ export interface Cred {
   timestamp?: string;
   curr?: number;
   next?: number;
+  isDeleted?: boolean;
 }
 
 export interface IndexedEntries {
@@ -49,16 +50,22 @@ export async function addEntry(
   return entries;
 }
 
-export function deleteEntry(entries: Cred[], k: number): Cred[] {
-  for (let i = k + 1; i < entries.length; i++) {
-    if (entries[i].prev > k) {
-      entries[i].prev--;
-    } else if (entries[i].prev === k) {
-      entries[i].prev = entries[k].prev;
-    }
-  }
+export async function deleteEntry(
+  cryptoKey: CryptoKey,
+  entries: Cred[],
+  k: number
+): Promise<Cred[]> {
+  const entry = entries[k];
+  entry.prev = entry.curr as number;
+  entry.isDeleted = true;
 
-  entries.splice(k, 1);
+  entries.push({
+    ...(await encryptCred(cryptoKey, entry)),
+    onChain: false,
+    curr: entries.length,
+    next: -1,
+  });
+
   return entries;
 }
 
@@ -158,6 +165,7 @@ export async function merge(source: Cred[], onChain: Cred[]): Promise<Cred[]> {
 }
 
 function organizeIntoChains(entries: Cred[]): Cred[][] {
+  console.log("[organizeIntoChains] entries: ", entries);
   // Step 1: Initialize chains
   const chains: Cred[][] = [];
 

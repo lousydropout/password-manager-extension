@@ -16,7 +16,13 @@ import { Cred } from "../utils/credentials";
 import { CustomTextArea } from "./CustomTextArea";
 import { useState } from "react";
 
-const CredentialCard = ({ cred }: { cred: Cred }) => {
+const CredentialCard = ({
+  cred,
+  onDelete,
+}: {
+  cred: Cred;
+  onDelete: (index: number) => Promise<void>;
+}) => {
   const [credState, setCredState] = useState<Cred>(cred);
   const [mode, setMode] = useState<"latest" | "edit">("latest");
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -103,7 +109,13 @@ const CredentialCard = ({ cred }: { cred: Cred }) => {
           </ModalBody>
 
           <ModalFooter flexDir={"column"}>
-            <CustomButton colorScheme={"accent"}>
+            <CustomButton
+              colorScheme={"accent"}
+              onClick={() => {
+                onDelete(cred.curr as number);
+                onClose();
+              }}
+            >
               Yes, delete this credential.
             </CustomButton>
             <CustomButton
@@ -115,7 +127,7 @@ const CredentialCard = ({ cred }: { cred: Cred }) => {
                 onClose();
               }}
             >
-              No, I changed my mind.
+              No, don't delete.
             </CustomButton>
           </ModalFooter>
         </ModalContent>
