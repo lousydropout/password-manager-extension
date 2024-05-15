@@ -73,6 +73,7 @@ export const Dashboard = ({
               </Heading>
 
               {credsByUrl.map((cred, index) => {
+                // TODO: show deleted creds if user wants to see them
                 if (cred.isDeleted) return null;
                 return (
                   <CredentialCard cred={cred} key={index} onDelete={onDelete} />
