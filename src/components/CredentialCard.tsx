@@ -43,7 +43,7 @@ const CredentialCard = ({
         alignItems={"end"}
       >
         <CustomInput
-          label={"username/email"}
+          // label={"username/email"}
           type="text"
           isReadOnly={mode === "latest"}
           value={credState?.username || ""}
@@ -51,7 +51,7 @@ const CredentialCard = ({
           copyable={true}
         />
         <CustomInput
-          label={"password"}
+          // label={"password"}
           type="password"
           isPassword={true}
           isReadOnly={mode === "latest"}
@@ -61,14 +61,14 @@ const CredentialCard = ({
 
         <CustomTextArea
           value={credState?.description || ""}
-          label={"description"}
+          // label={"description"}
           isReadOnly={mode === "latest"}
           onChange={(e) =>
             setCredState({ ...cred, description: e.target.value })
           }
         />
 
-        <Box my={4}></Box>
+        <Box my={2}></Box>
         <HStack>
           {mode === "latest" && (
             <>
