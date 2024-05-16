@@ -41,6 +41,24 @@ export async function addEntry(
   entries: Cred[],
   entry: Cred
 ): Promise<Cred[]> {
+  const newEntry = {
+    ...entry,
+    curr: entries.length,
+    timestamp: new Date().toISOString(),
+  };
+  entries.push({
+    ...(await encryptCred(cryptoKey, newEntry)),
+    onChain: false,
+    next: -1,
+  });
+  return entries;
+}
+
+export async function modifyEntry(
+  cryptoKey: CryptoKey,
+  entries: Cred[],
+  entry: Cred
+): Promise<Cred[]> {
   entries.push({
     ...(await encryptCred(cryptoKey, entry)),
     onChain: false,
@@ -63,6 +81,7 @@ export async function deleteEntry(
     ...(await encryptCred(cryptoKey, entry)),
     onChain: false,
     curr: entries.length,
+    timestamp: new Date().toISOString(),
     next: -1,
   });
 

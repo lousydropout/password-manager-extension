@@ -18,9 +18,13 @@ import { useState } from "react";
 
 const CredentialCard = ({
   cred,
+  onSave,
+  onModify,
   onDelete,
 }: {
   cred: Cred;
+  onSave: (data: Cred) => Promise<void>;
+  onModify: (data: Cred) => Promise<void>;
   onDelete: (index: number) => Promise<void>;
 }) => {
   const [credState, setCredState] = useState<Cred>(cred);
@@ -81,7 +85,20 @@ const CredentialCard = ({
           )}
           {mode === "edit" && (
             <>
-              <CustomButton colorScheme={"accent"}>Save</CustomButton>
+              <CustomButton
+                colorScheme={"accent"}
+                onClick={(event) => {
+                  event.preventDefault();
+                  if (credState.onChain) {
+                    onSave({ ...credState, prev: credState.curr as number });
+                  } else {
+                    onModify(credState);
+                  }
+                  setMode("latest");
+                }}
+              >
+                Save
+              </CustomButton>
               <CustomButton
                 colorScheme={"warning"}
                 onClick={() => {

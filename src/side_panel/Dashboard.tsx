@@ -56,11 +56,14 @@ export const Dashboard = ({
 
   const CredCardsForUrl = ({ credentials, onDelete }: CredentialsProps) => {
     const sortedKeys = Object.keys(credentials).sort();
+    console.log("[CredCardsForUrl] sortedKeys: ", sortedKeys);
+    console.log("[CredCardsForUrl] credentials: ", credentials);
 
     return (
       <Box>
         {sortedKeys.map((url) => {
           const credsByUrl = credentials[url];
+          if (sortedKeys.length > 1 && credsByUrl.length === 0) return null;
           return (
             <Box key={url} pt={2}>
               <Heading
@@ -77,7 +80,13 @@ export const Dashboard = ({
                 // TODO: show deleted creds if user wants to see them
                 if (cred.isDeleted) return null;
                 return (
-                  <CredentialCard cred={cred} key={index} onDelete={onDelete} />
+                  <CredentialCard
+                    cred={cred}
+                    key={index}
+                    onSave={onSave}
+                    onModify={onModify}
+                    onDelete={onDelete}
+                  />
                 );
               })}
 
@@ -96,9 +105,14 @@ export const Dashboard = ({
   };
 
   const onSave = async (data: Cred) => {
-    let entry: Cred = { ...data, onChain: false };
-    const result = await addEntry(cryptoKey, creds, entry);
+    const result = await addEntry(cryptoKey, creds, data);
     setCreds(result);
+  };
+
+  const onModify = async (data: Cred) => {
+    const _creds = creds;
+    _creds[data.curr as number] = data;
+    setCreds(_creds);
   };
 
   const onDelete = async (index: number) => {
