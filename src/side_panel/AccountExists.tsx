@@ -47,7 +47,10 @@ export const AccountExists = ({ setJwk, contextState }: AccountExistsProps) => {
       )}
       {importOrReset === "IMPORT" && (
         <>
-          <CustomTextArea onChange={(e) => setEncKey(e.target.value)} />
+          <CustomTextArea
+            value={encKey}
+            onChange={(e) => setEncKey(e.target.value)}
+          />
           <Text
             fontSize={"large"}
             display={errorMsg === undefined ? "none" : "inline"}
