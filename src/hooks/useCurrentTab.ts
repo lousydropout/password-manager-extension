@@ -1,25 +1,5 @@
 import { useEffect, useState } from "react";
-
-const getHostname = (
-  currentTab: chrome.tabs.Tab | undefined
-): string | null => {
-  if (currentTab === undefined) return null;
-
-  if (currentTab?.url) {
-    try {
-      const urlParts = new URL(currentTab.url);
-      const hostname = urlParts.hostname;
-      const parts = hostname.split(".");
-      if (parts.length > 2) {
-        return parts.slice(1).join(".");
-      }
-      return hostname;
-    } catch (e) {
-      console.log("Unable to read current tab's url: ", e);
-    }
-  }
-  return null;
-};
+import { getHostname } from "../utils/getHostname";
 
 export function useCurrentTab(): [chrome.tabs.Tab | undefined, string | null] {
   const [tab, setTab] = useState<chrome.tabs.Tab | undefined>(undefined);

@@ -20,7 +20,7 @@ const SidePanel: FC = () => {
     "CHECKING",
     calculateNextState
   );
-  const [jwk, setJwk, _jwkHash, cryptoKey] = useCryptoKeyManager();
+  const [jwk, setJwk, _jwkHash, cryptoKey, generateKey] = useCryptoKeyManager();
   const [encrypted, setEncrypted] = useChromeStorageLocal<Encrypted[]>(
     `encrypted`,
     []
@@ -76,13 +76,16 @@ const SidePanel: FC = () => {
 
   // get encryption key hash
   useEffect(() => {
-    console.debug("jwk: ", jwk);
+    console.debug("jwk, contextState: ", jwk, contextState);
     if (!jwk) return;
 
     const setJwkHash = async () => {
       const encryptionKeyHash = await hash(JSON.stringify(jwk));
-      console.log({ encryptionKeyHash });
-      setState("ACCOUNT_IMPORT_SUCCESS", { encryptionKeyHash });
+      if (contextState?.state === "ACCOUNT_RESET") {
+        setState("ACCOUNT_RESET_REQUESTED", { encryptionKeyHash });
+      } else {
+        setState("ACCOUNT_IMPORT_SUCCESS", { encryptionKeyHash });
+      }
     };
     setJwkHash();
   }, [jwk]);
@@ -91,8 +94,15 @@ const SidePanel: FC = () => {
     <>
       {contextState?.state === "CHECKING" && <Welcome />}
       {contextState?.state === "ACCOUNT_DOES_NOT_EXIST" && <Registration />}
-      {contextState?.state === "ACCOUNT_EXISTS" && (
-        <AccountExists setJwk={setJwk} contextState={contextState} />
+      {(contextState?.state === "ACCOUNT_EXISTS" ||
+        contextState?.state === "ACCOUNT_RESET") && (
+        <AccountExists
+          setJwk={setJwk}
+          contextState={contextState}
+          generateKey={generateKey}
+          setState={setState}
+          currentUrl={currentUrl}
+        />
       )}
       {contextState?.state === "LOGGED_IN" && (
         <Dashboard

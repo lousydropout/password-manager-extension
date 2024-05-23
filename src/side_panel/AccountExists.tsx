@@ -6,13 +6,24 @@ import { hash, importCryptoKey } from "../utils/encryption";
 import { queryData } from "../utils/smartContractQuery";
 import { State } from "./stateMachine";
 import { Context } from "../hooks/useFiniteStateMachine";
+import { URL } from "./url";
+import { getHostname } from "../utils/getHostname";
 
 export type AccountExistsProps = {
   setJwk: Dispatch<React.SetStateAction<JsonWebKey | null>>;
   contextState: Context<State>;
+  setState: (action: string, data: Record<string, any>) => void;
+  generateKey: () => Promise<void>;
+  currentUrl: string | null;
 };
 
-export const AccountExists = ({ setJwk, contextState }: AccountExistsProps) => {
+export const AccountExists = ({
+  setJwk,
+  contextState,
+  setState,
+  generateKey,
+  currentUrl,
+}: AccountExistsProps) => {
   const [importOrReset, setImportOrReset] = useState<
     "IMPORT" | "RESET" | undefined
   >();
@@ -29,7 +40,7 @@ export const AccountExists = ({ setJwk, contextState }: AccountExistsProps) => {
         To continue, you can either import your encryption key or reset your
         account using a new encryption key:
       </Heading>
-      {importOrReset === undefined && (
+      {(importOrReset === undefined || importOrReset === "RESET") && (
         <>
           <CustomButton
             colorScheme="primary"
@@ -39,7 +50,16 @@ export const AccountExists = ({ setJwk, contextState }: AccountExistsProps) => {
           </CustomButton>
           <CustomButton
             colorScheme="secondary"
-            onClick={() => setImportOrReset("RESET")}
+            onClick={async () => {
+              const urlHostname = getHostname(URL);
+              if (currentUrl !== urlHostname) {
+                await chrome.tabs.create({ url: URL });
+              }
+              setImportOrReset("RESET");
+
+              await generateKey();
+              setState("ACCOUNT_RESET_REQUESTED", {});
+            }}
           >
             Reset my account
           </CustomButton>
@@ -100,14 +120,6 @@ export const AccountExists = ({ setJwk, contextState }: AccountExistsProps) => {
           >
             Import encryption key
           </CustomButton>
-        </>
-      )}
-
-      {importOrReset === "RESET" && (
-        <>
-          <Heading as={"h3"} mb={8}>
-            Rest Account
-          </Heading>
         </>
       )}
     </Box>

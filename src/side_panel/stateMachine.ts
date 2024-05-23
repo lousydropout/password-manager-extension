@@ -13,6 +13,8 @@ export type Action =
   | "REQUEST_CONTEXT"
   | "FOUND_NO_ACCOUNT"
   | "FOUND_ACCOUNT"
+  | "ACCOUNT_RESET_REQUESTED"
+  | "ACCOUNT_RESET_SUCCESS"
   | "ACCOUNT_IMPORT_SUCCESS"
   | "ACCOUNT_CREATION_SUCCESS"
   | "ACCOUNT_CREATION_FAILURE";
@@ -83,6 +85,26 @@ export const calculateNextState = (
 
     case "ACCOUNT_IMPORT_SUCCESS":
       if (currentContext.state != "ACCOUNT_EXISTS") return currentContext;
+      return {
+        ...currentContext,
+        action: message.action,
+        context: { ...currentContext.context, ...message.data },
+        state: "LOGGED_IN",
+        send: true,
+      } as Context<State>;
+
+    case "ACCOUNT_RESET_REQUESTED":
+      if (currentContext.state != "ACCOUNT_RESET") return currentContext;
+      return {
+        ...currentContext,
+        action: message.action,
+        context: { ...currentContext.context, ...message.data },
+        state: "ACCOUNT_RESET",
+        send: true,
+      } as Context<State>;
+
+    case "ACCOUNT_RESET_SUCCESS":
+      if (currentContext.state != "ACCOUNT_RESET") return currentContext;
       return {
         ...currentContext,
         action: message.action,
