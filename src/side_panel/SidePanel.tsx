@@ -31,6 +31,7 @@ const SidePanel: FC = () => {
   const getNumOnChain = async (cryptoKey: CryptoKey) => {
     // If the user is not logged in or there are already entries on chain, return
     if (!contextState?.context.walletAddress) return;
+    if (contextState?.state !== "LOGGED_IN") return;
 
     const num = (await queryData("get-entry-count", {
       accountId: contextState?.context.walletAddress,
@@ -89,6 +90,10 @@ const SidePanel: FC = () => {
     };
     setJwkHash();
   }, [jwk]);
+
+  useEffect(() => {
+    console.error("state: ", contextState?.state);
+  }, [contextState]);
 
   return (
     <>

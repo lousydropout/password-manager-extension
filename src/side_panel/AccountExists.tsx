@@ -20,7 +20,6 @@ export type AccountExistsProps = {
 export const AccountExists = ({
   setJwk,
   contextState,
-  setState,
   generateKey,
   currentUrl,
 }: AccountExistsProps) => {
@@ -51,14 +50,11 @@ export const AccountExists = ({
           <CustomButton
             colorScheme="secondary"
             onClick={async () => {
-              const urlHostname = getHostname(URL);
-              if (currentUrl !== urlHostname) {
+              if (currentUrl !== getHostname(URL)) {
                 await chrome.tabs.create({ url: URL });
               }
               setImportOrReset("RESET");
-
               await generateKey();
-              setState("ACCOUNT_RESET_REQUESTED", {});
             }}
           >
             Reset my account
