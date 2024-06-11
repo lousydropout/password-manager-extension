@@ -101,7 +101,7 @@ function useFiniteStateMachine<State>(
         console.debug("[useFSM useEffect setContext] context: ", prev);
         if (!(prev.send && prev.action)) return prev;
         postMessage(prev.action, prev.context);
-        return { ...prev, action: "", send: false };
+        return { ...prev, action: "", send: true };
       });
     };
 

@@ -82,9 +82,11 @@ const SidePanel: FC = () => {
 
     const setJwkHash = async () => {
       const encryptionKeyHash = await hash(JSON.stringify(jwk));
+      console.error("[setJwkHash] contextState: ", contextState);
       if (contextState?.state === "ACCOUNT_RESET") {
-        setState("ACCOUNT_RESET_REQUESTED", { encryptionKeyHash });
+        _updateContext("ACCOUNT_RESET_REQUESTED", { encryptionKeyHash }, true);
       } else {
+        console.log("ACCOUNT_IMPORT_SUCCESS");
         setState("ACCOUNT_IMPORT_SUCCESS", { encryptionKeyHash });
       }
     };

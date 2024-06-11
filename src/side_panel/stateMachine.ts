@@ -72,7 +72,8 @@ export const calculateNextState = (
       } as Context<State>;
 
     case "ACCOUNT_RESET_REQUESTED":
-      if (currentContext.state != "ACCOUNT_RESET") return currentContext;
+      console.error("ACCOUNT_RESET_REQUESTED");
+      // if (currentContext.state != "ACCOUNT_RESET") return currentContext;
       return {
         ...currentContext,
         action: message.action,
@@ -82,7 +83,11 @@ export const calculateNextState = (
       } as Context<State>;
 
     case "ACCOUNT_RESET_SUCCESS":
-      if (currentContext.state != "ACCOUNT_RESET") return currentContext;
+      if (
+        currentContext.state != "ACCOUNT_RESET" &&
+        currentContext.state != "ACCOUNT_EXISTS"
+      )
+        return currentContext;
       return {
         ...currentContext,
         action: message.action,

@@ -21,6 +21,7 @@ export const AccountExists = ({
   setJwk,
   contextState,
   generateKey,
+  setState,
   currentUrl,
 }: AccountExistsProps) => {
   const [importOrReset, setImportOrReset] = useState<
@@ -55,6 +56,7 @@ export const AccountExists = ({
               }
               setImportOrReset("RESET");
               await generateKey();
+              setState("ACCOUNT_RESET_REQUESTED", {});
             }}
           >
             Reset my account
@@ -105,7 +107,6 @@ export const AccountExists = ({
                   return;
                 }
 
-                // updateContext(null, { encryptionKeyHash }, true);
                 setJwk(_jwk);
               } catch (e) {
                 setErrorMsg("Invalid encryption key");
