@@ -44,7 +44,10 @@ export const AccountExists = ({
         <>
           <CustomButton
             colorScheme="primary"
-            onClick={() => setImportOrReset("IMPORT")}
+            onClick={() => {
+              setImportOrReset("IMPORT");
+              setState("IMPORT_ACCOUNT", {});
+            }}
           >
             Import my encryption key
           </CustomButton>
@@ -60,6 +63,12 @@ export const AccountExists = ({
             }}
           >
             Reset my account
+          </CustomButton>
+          <CustomButton
+            colorScheme="warning"
+            onClick={() => setState("DISCONNECT_WALLET", {})}
+          >
+            Cancel
           </CustomButton>
         </>
       )}
@@ -80,6 +89,7 @@ export const AccountExists = ({
             colorScheme="primary"
             isDisabled={importing}
             onClick={async () => {
+              console.log("importing");
               let _jwk;
               try {
                 setImporting(true);
@@ -95,27 +105,32 @@ export const AccountExists = ({
                   "get-encryption-key-hash",
                   { accountId }
                 );
-                console.log(
-                  "[CustomButton] encryptionKeyHash: ",
-                  encryptionKeyHash
-                );
 
                 if (encryptionKeyHash && jwkStringHash !== encryptionKeyHash) {
-                  setErrorMsg(
+                  // setErrorMsg(
+                  //   `The hash of the JWK you inputted (${jwkStringHash}) does not match the hash on record (${encryptionKeyHash}).`
+                  // );
+                  throw new Error(
                     `The hash of the JWK you inputted (${jwkStringHash}) does not match the hash on record (${encryptionKeyHash}).`
                   );
-                  return;
                 }
 
                 setJwk(_jwk);
-              } catch (e) {
-                setErrorMsg("Invalid encryption key");
+                setState("ACCOUNT_IMPORT_SUCCESS", { encryptionKeyHash });
+              } catch (e: Error | any) {
+                // if (errorMsg === undefined)
+                setErrorMsg(e.message);
                 setImporting(false);
-                return;
               }
             }}
           >
             Import encryption key
+          </CustomButton>
+          <CustomButton
+            colorScheme="warning"
+            onClick={() => setState("DISCONNECT_WALLET", {})}
+          >
+            Cancel
           </CustomButton>
         </>
       )}

@@ -85,9 +85,12 @@ const SidePanel: FC = () => {
       console.error("[setJwkHash] contextState: ", contextState);
       if (contextState?.state === "ACCOUNT_RESET") {
         _updateContext("ACCOUNT_RESET_REQUESTED", { encryptionKeyHash }, true);
-      } else {
+      } else if (
+        contextState?.state === "ACCOUNT_EXISTS" &&
+        (contextState?.context?.correctKey ?? false)
+      ) {
         console.log("ACCOUNT_IMPORT_SUCCESS");
-        setState("ACCOUNT_IMPORT_SUCCESS", { encryptionKeyHash });
+        _updateContext("ACCOUNT_IMPORT_SUCCESS", { encryptionKeyHash }, false);
       }
     };
     setJwkHash();
@@ -95,6 +98,21 @@ const SidePanel: FC = () => {
 
   useEffect(() => {
     console.error("state: ", contextState?.state);
+    if (contextState?.state === "ON_CHAIN_UPDATE_IN_PROGRESS") {
+    }
+
+    if (contextState?.state === "ACCOUNT_IMPORT") {
+    }
+
+    // if (contextState?.state === "ON_CHAIN_UPDATE_IN_PROGRESS") {
+    //   setCreds((_creds) =>
+    //     _creds.map((_cred, i) => ({
+    //       ..._cred,
+    //       onChain: i < (contextState.context?.getNumOnChain ?? 0),
+    //     }))
+    //   );
+    //   _updateContext("ON_CHAIN_UPDATE_SUCCESS", {}, false);
+    // }
   }, [contextState]);
 
   return (
@@ -102,6 +120,7 @@ const SidePanel: FC = () => {
       {contextState?.state === "CHECKING" && <Welcome />}
       {contextState?.state === "ACCOUNT_DOES_NOT_EXIST" && <Registration />}
       {(contextState?.state === "ACCOUNT_EXISTS" ||
+        contextState?.state === "ACCOUNT_IMPORT" ||
         contextState?.state === "ACCOUNT_RESET") && (
         <AccountExists
           setJwk={setJwk}
@@ -111,7 +130,8 @@ const SidePanel: FC = () => {
           currentUrl={currentUrl}
         />
       )}
-      {contextState?.state === "LOGGED_IN" && (
+      {(contextState?.state === "LOGGED_IN" ||
+        contextState?.state === "ON_CHAIN_UPDATE_IN_PROGRESS") && (
         <Dashboard
           queryOnChainIfNeeded={queryOnChainIfNeeded}
           currentUrl={currentUrl as string}

@@ -6,7 +6,8 @@ export type State =
   | "ACCOUNT_EXISTS"
   | "ACCOUNT_IMPORT"
   | "ACCOUNT_RESET"
-  | "LOGGED_IN";
+  | "LOGGED_IN"
+  | "ON_CHAIN_UPDATE_IN_PROGRESS";
 
 export type Action =
   | "DISCONNECT_WALLET"
@@ -17,7 +18,11 @@ export type Action =
   | "ACCOUNT_RESET_SUCCESS"
   | "ACCOUNT_IMPORT_SUCCESS"
   | "ACCOUNT_CREATION_SUCCESS"
-  | "ACCOUNT_CREATION_FAILURE";
+  | "ACCOUNT_CREATION_FAILURE"
+  | "SYNC_SUCCESS"
+  | "ON_CHAIN_UPDATE_SUCCESS"
+  | "UPDATING_CREDENTIALS_ON_CHAIN_STATUS"
+  | "IMPORT_ACCOUNT";
 
 export const calculateNextState = (
   currentContext: Context<State>,
@@ -25,18 +30,32 @@ export const calculateNextState = (
 ): Context<State> => {
   let result;
 
+  console.log(
+    "[calculateNextState] currentContext: ",
+    currentContext,
+    message.action
+  );
+
   switch (message.action as Action) {
     case "DISCONNECT_WALLET":
       result = {
         ...currentContext,
-        state: "CHECKING",
+        state: "CHECKING" as State,
         action: message.action,
         send: true,
       };
       delete result.context.walletAddress;
       delete result.context.correctKey;
       delete result.context.createdAccount;
-      return result as Context<State>;
+      return result;
+
+    case "IMPORT_ACCOUNT":
+      return {
+        ...currentContext,
+        action: message.action,
+        state: "ACCOUNT_IMPORT" as State,
+        send: false,
+      };
 
     case "REQUEST_CONTEXT":
       return { ...currentContext, action: "UPDATE_CONTEXT", send: true };
@@ -47,29 +66,33 @@ export const calculateNextState = (
         ...currentContext,
         action: message.action,
         context: { ...currentContext.context, ...message.data },
-        state: "ACCOUNT_DOES_NOT_EXIST",
+        state: "ACCOUNT_DOES_NOT_EXIST" as State,
         send: false,
-      } as Context<State>;
+      };
 
     case "FOUND_ACCOUNT":
-      if (currentContext.state !== "CHECKING") return currentContext;
+      if (
+        currentContext.state !== "CHECKING" &&
+        currentContext.state !== "ACCOUNT_EXISTS"
+      )
+        return currentContext;
       return {
         ...currentContext,
         action: message.action,
         context: { ...currentContext.context, ...message.data },
-        state: "ACCOUNT_EXISTS",
+        state: "ACCOUNT_EXISTS" as State,
         send: true,
-      } as Context<State>;
+      };
 
     case "ACCOUNT_IMPORT_SUCCESS":
-      if (currentContext.state != "ACCOUNT_EXISTS") return currentContext;
+      if (currentContext.state != "ACCOUNT_IMPORT") return currentContext;
       return {
         ...currentContext,
         action: message.action,
         context: { ...currentContext.context, ...message.data },
-        state: "LOGGED_IN",
+        state: "LOGGED_IN" as State,
         send: true,
-      } as Context<State>;
+      };
 
     case "ACCOUNT_RESET_REQUESTED":
       console.error("ACCOUNT_RESET_REQUESTED");
@@ -78,9 +101,9 @@ export const calculateNextState = (
         ...currentContext,
         action: message.action,
         context: { ...currentContext.context, ...message.data },
-        state: "ACCOUNT_RESET",
+        state: "ACCOUNT_RESET" as State,
         send: true,
-      } as Context<State>;
+      };
 
     case "ACCOUNT_RESET_SUCCESS":
       if (
@@ -92,9 +115,9 @@ export const calculateNextState = (
         ...currentContext,
         action: message.action,
         context: { ...currentContext.context, ...message.data },
-        state: "LOGGED_IN",
+        state: "LOGGED_IN" as State,
         send: true,
-      } as Context<State>;
+      };
 
     case "ACCOUNT_CREATION_SUCCESS":
       if (currentContext.state !== "ACCOUNT_DOES_NOT_EXIST")
@@ -103,27 +126,36 @@ export const calculateNextState = (
         ...currentContext,
         action: message.action,
         context: { ...currentContext.context, ...message.data },
-        state: "LOGGED_IN",
+        state: "LOGGED_IN" as State,
         send: true,
-      } as Context<State>;
+      };
 
     case "ACCOUNT_CREATION_FAILURE":
       if (currentContext.state !== "ACCOUNT_DOES_NOT_EXIST")
         return currentContext;
-      result = {
+      return {
         ...currentContext,
         action: message.action,
         context: { ...currentContext.context, ...message.data },
-        state: "HOME",
+        state: "HOME" as State,
         send: true,
       };
-      console.debug(
-        "[ACCOUNT_CREATION_FAILURE -> HOME]: ",
-        currentContext.state,
-        message,
-        result
-      );
-      return result as Context<State>;
+
+    case "SYNC_SUCCESS":
+      return {
+        ...currentContext,
+        action: "UPDATING_CREDENTIALS_ON_CHAIN_STATUS",
+        state: "ON_CHAIN_UPDATE_IN_PROGRESS" as State,
+        send: false,
+      };
+
+    case "ON_CHAIN_UPDATE_SUCCESS":
+      return {
+        ...currentContext,
+        action: message.action,
+        state: "LOGGED_IN" as State,
+        send: false,
+      };
 
     default:
       return {
