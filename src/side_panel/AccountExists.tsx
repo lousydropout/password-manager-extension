@@ -33,13 +33,19 @@ export const AccountExists = ({
 
   return (
     <Box px={4} py={12} display={"flex"} flexDir={"column"} gap={4}>
-      <Heading textAlign={"center"} as={"h1"} mb={12}>
-        We found a registered account associated with your address!
-      </Heading>
-      <Heading as={"h3"} mb={8}>
+      <Box textAlign={"left"} mb={2}>
+        <Heading as={"h1"} display={"inline"}>
+          Registered account found for address:
+        </Heading>
+        <Text as={"h3"} fontSize={"lg"} display={"inline"} ml={2}>
+          {contextState?.context.truncatedAddress || ""}
+        </Text>
+      </Box>
+
+      <Text as={"h3"} mb={8} fontSize="xl">
         To continue, you can either import your encryption key or reset your
         account using a new encryption key:
-      </Heading>
+      </Text>
       {(importOrReset === undefined || importOrReset === "RESET") && (
         <>
           <CustomButton
