@@ -1,5 +1,5 @@
 import { Box, Heading, Text } from "@chakra-ui/react";
-import { Dispatch, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
 import { CustomButton } from "../components/CustomButton";
 import { CustomTextArea } from "../components/CustomTextArea";
 import { hash, importCryptoKey } from "../utils/encryption";
@@ -30,6 +30,10 @@ export const AccountExists = ({
   const [encKey, setEncKey] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string | undefined>();
   const [importing, setImporting] = useState<boolean>(false);
+
+  useEffect(() => {
+    generateKey();
+  }, []);
 
   return (
     <Box px={4} py={12} display={"flex"} flexDir={"column"} gap={4}>
@@ -62,10 +66,13 @@ export const AccountExists = ({
             onClick={async () => {
               if (currentUrl !== getHostname(URL)) {
                 await chrome.tabs.create({ url: URL });
+              } else {
+                setImportOrReset("RESET");
+                // await generateKey();
+                setState("ACCOUNT_RESET_REQUESTED", {
+                  encryptionKeyHash: contextState?.context.encryptionKeyHash,
+                });
               }
-              setImportOrReset("RESET");
-              await generateKey();
-              setState("ACCOUNT_RESET_REQUESTED", {});
             }}
           >
             Reset my account
