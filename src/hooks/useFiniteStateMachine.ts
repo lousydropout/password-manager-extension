@@ -55,12 +55,14 @@ function useFiniteStateMachine<State>(
     );
     setContext((prev) => {
       if (prev) {
-        return {
+        const result = {
           ...prev,
           context: { ...prev.context, ...data },
           action: action ? action : "",
           send,
         };
+        console.log("[useFSM updateContext] result: ", result);
+        return result;
       }
     });
   };

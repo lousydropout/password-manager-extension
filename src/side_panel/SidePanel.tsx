@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { useFiniteStateMachine } from "../hooks/useFiniteStateMachine";
 import { Button, Heading } from "@chakra-ui/react";
 import { useCurrentTab } from "../hooks/useCurrentTab";
@@ -27,46 +27,47 @@ const SidePanel: FC = () => {
   );
   const [creds, setCreds] = useChromeStorageLocal<Cred[]>("credentials", []);
   const [onChain, setOnChain] = useChromeStorageLocal<Cred[]>("onChain", []);
+  const [numOnChain, setNumOnChain] = useState<number>(-1);
 
   const getNumOnChain = async (cryptoKey: CryptoKey) => {
     // If the user is not logged in or there are already entries on chain, return
     if (!contextState?.context.walletAddress) return;
-    if (contextState?.state !== "LOGGED_IN") return;
+    if (
+      contextState?.state !== "LOGGED_IN" &&
+      contextState?.state !== "ON_CHAIN_UPDATE_IN_PROGRESS"
+    ) {
+      return;
+    }
 
     const num = (await queryData("get-entry-count", {
       accountId: contextState?.context.walletAddress,
     })) as number;
 
-    // get and decrypt entries from on-chain
-    if (num > creds.filter((cred) => cred.onChain).length) {
-      const onChainEncrypted = (await queryData("get-entries", {
+    const updatedCreds: Cred[] = creds.map((cred) => ({
+      ...cred,
+      onChain: true,
+    }));
+    const maxNum = 100;
+    console.log("[getNumOnChain] creds: ", creds);
+    for (let curr = creds.length; curr < num; curr += maxNum) {
+      const entries = (await queryData("get-entries", {
         accountId: contextState?.context.walletAddress,
-        startIndex: 0,
-        maxNum: 100,
+        startIndex: curr,
+        maxNum,
       })) as Encrypted[];
 
-      // decrypt onChain entries
-      const _onChain: Cred[] = [];
-      for (let curr = 0; curr < onChainEncrypted.length; curr++) {
-        const entry = await decryptEntry(cryptoKey, onChainEncrypted[curr]);
-        _onChain.push({ ...entry, onChain: true, curr });
+      console.log("[getNumOnChain] entries: ", entries);
+
+      for (let i = 0; i < entries.length; i++) {
+        const entry = await decryptEntry(cryptoKey, entries[i]);
+        updatedCreds.push({ ...entry, onChain: true, curr: curr + i });
       }
-
-      console.log("onChain: ", _onChain, JSON.stringify(_onChain));
-      console.log("creds: ", creds, JSON.stringify(creds));
-      console.log("encrypted: ", encrypted, JSON.stringify(encrypted));
-
-      setOnChain(_onChain);
-
-      const merged = await merge(creds, _onChain);
-      console.log("merged: ", merged, JSON.stringify(merged));
-      setCreds(merged);
-      setEncrypted(merged.map((cred) => cred.ciphertext as Encrypted));
     }
+    setCreds(updatedCreds);
+    setEncrypted(updatedCreds.map((cred) => cred.ciphertext as Encrypted));
   };
 
   const queryOnChainIfNeeded = async () => {
-    console.log("queryOnChainIfNeeded");
     await getNumOnChain(cryptoKey as CryptoKey);
   };
 
@@ -82,7 +83,11 @@ const SidePanel: FC = () => {
 
     const setJwkHash = async () => {
       const encryptionKeyHash = await hash(JSON.stringify(jwk));
-      console.error("[setJwkHash] contextState: ", contextState);
+      console.error(
+        "[setJwkHash] contextState: ",
+        contextState,
+        encryptionKeyHash
+      );
       if (contextState?.state === "ACCOUNT_RESET") {
         _updateContext("ACCOUNT_RESET_REQUESTED", { encryptionKeyHash }, true);
       } else if (
@@ -97,22 +102,15 @@ const SidePanel: FC = () => {
   }, [jwk]);
 
   useEffect(() => {
-    console.error("state: ", contextState?.state);
+    console.error("state: ", contextState?.state, contextState);
     if (contextState?.state === "ON_CHAIN_UPDATE_IN_PROGRESS") {
+      console.error("ON_CHAIN_UPDATE_IN_PROGRESS");
+      setCreds((_creds) =>
+        _creds.map((_cred, i) => ({ ..._cred, onChain: i < numOnChain }))
+      );
+      setState("ON_CHAIN_UPDATE_SUCCESS", {});
+      // _updateContext("ON_CHAIN_UPDATE_SUCCESS", {}, false);
     }
-
-    if (contextState?.state === "ACCOUNT_IMPORT") {
-    }
-
-    // if (contextState?.state === "ON_CHAIN_UPDATE_IN_PROGRESS") {
-    //   setCreds((_creds) =>
-    //     _creds.map((_cred, i) => ({
-    //       ..._cred,
-    //       onChain: i < (contextState.context?.getNumOnChain ?? 0),
-    //     }))
-    //   );
-    //   _updateContext("ON_CHAIN_UPDATE_SUCCESS", {}, false);
-    // }
   }, [contextState]);
 
   return (
