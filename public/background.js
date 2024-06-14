@@ -3,10 +3,13 @@ const TO_EXTENSION = "TO_EXTENSION";
 const FROM_EXTENSION = "FROM_EXTENSION";
 const INITIALIZATION = "INITIALIZATION";
 const REQUEST = "REQUEST";
-console.log("Background script running.");
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.origin === "koni-page" || message.origin === "koni-content")
+  if (
+    message.origin === "koni-page" ||
+    message.origin === "koni-content" ||
+    message.source === "react-devtools-content-script"
+  )
     return false;
   console.debug("[background] Message received: ", message);
 
@@ -21,12 +24,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chrome.storage.local.set({
         [message.key]: JSON.stringify(message.value),
       });
-      console.log(`Storing {${message.key}: ${message.value}}`);
       break;
 
     case INITIALIZATION:
       chrome.storage.local.set({ [message.key]: INITIALIZATION });
-      console.log(`Initializing message key '${message.key}'`);
       break;
 
     default:
@@ -41,8 +42,3 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true }) // set to `false` to allow regular popups
   .catch((error) => console.error(error));
-
-// chrome.runtime.onMessage.addListener((message, sender) => {
-//   console.log("[backgroundScript onMessage listener] message: ", message);
-//   console.log("[backgroundScript onMessage listener] sender: ", sender);
-// });
