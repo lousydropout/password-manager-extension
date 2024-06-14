@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from "react";
 import { useFiniteStateMachine } from "../hooks/useFiniteStateMachine";
-import { Button, Heading } from "@chakra-ui/react";
 import { useCurrentTab } from "../hooks/useCurrentTab";
 import { useCryptoKeyManager } from "../hooks/useCryptoKey";
 import { hash } from "../utils/encryption";
@@ -26,7 +25,6 @@ const SidePanel: FC = () => {
     []
   );
   const [creds, setCreds] = useChromeStorageLocal<Cred[]>("credentials", []);
-  const [onChain, setOnChain] = useChromeStorageLocal<Cred[]>("onChain", []);
   const [numOnChain, setNumOnChain] = useState<number>(-1);
 
   const getNumOnChain = async (cryptoKey: CryptoKey) => {
@@ -42,6 +40,7 @@ const SidePanel: FC = () => {
     const num = (await queryData("get-entry-count", {
       accountId: contextState?.context.walletAddress,
     })) as number;
+    setNumOnChain(num);
 
     const updatedCreds: Cred[] = creds.map((cred) => ({
       ...cred,
@@ -142,21 +141,6 @@ const SidePanel: FC = () => {
           contextState={contextState}
         />
       )}
-
-      <Button
-        onClick={() => {
-          console.log("[contextState]: ", contextState);
-          console.log("[encrypted]: ", encrypted);
-          console.log("[creds]: ", creds);
-          console.log("[onChain]: ", onChain);
-        }}
-      >
-        Log states
-      </Button>
-
-      <Heading as={"pre"} fontSize={"medium"} mx={4} my={12} textAlign={"left"}>
-        Context: {JSON.stringify(contextState, null, 4)}
-      </Heading>
     </>
   );
 };
