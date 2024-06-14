@@ -184,7 +184,6 @@ export async function merge(source: Cred[], onChain: Cred[]): Promise<Cred[]> {
 }
 
 function organizeIntoChains(entries: Cred[]): Cred[][] {
-  console.log("[organizeIntoChains] entries: ", entries);
   // Step 1: Initialize chains
   const chains: Cred[][] = [];
 

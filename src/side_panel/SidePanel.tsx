@@ -47,15 +47,12 @@ const SidePanel: FC = () => {
       onChain: true,
     }));
     const maxNum = 100;
-    console.log("[getNumOnChain] creds: ", creds);
     for (let curr = creds.length; curr < num; curr += maxNum) {
       const entries = (await queryData("get-entries", {
         accountId: contextState?.context.walletAddress,
         startIndex: curr,
         maxNum,
       })) as Encrypted[];
-
-      console.log("[getNumOnChain] entries: ", entries);
 
       for (let i = 0; i < entries.length; i++) {
         const entry = await decryptEntry(cryptoKey, entries[i]);
@@ -77,23 +74,16 @@ const SidePanel: FC = () => {
 
   // get encryption key hash
   useEffect(() => {
-    console.debug("jwk, contextState: ", jwk, contextState);
     if (!jwk) return;
 
     const setJwkHash = async () => {
       const encryptionKeyHash = await hash(JSON.stringify(jwk));
-      console.error(
-        "[setJwkHash] contextState: ",
-        contextState,
-        encryptionKeyHash
-      );
       if (contextState?.state === "ACCOUNT_RESET") {
         _updateContext("ACCOUNT_RESET_REQUESTED", { encryptionKeyHash }, true);
       } else if (
         contextState?.state === "ACCOUNT_EXISTS" &&
         (contextState?.context?.correctKey ?? false)
       ) {
-        console.log("ACCOUNT_IMPORT_SUCCESS");
         _updateContext("ACCOUNT_IMPORT_SUCCESS", { encryptionKeyHash }, false);
       }
     };
@@ -101,14 +91,11 @@ const SidePanel: FC = () => {
   }, [jwk]);
 
   useEffect(() => {
-    console.error("state: ", contextState?.state, contextState);
     if (contextState?.state === "ON_CHAIN_UPDATE_IN_PROGRESS") {
-      console.error("ON_CHAIN_UPDATE_IN_PROGRESS");
       setCreds((_creds) =>
         _creds.map((_cred, i) => ({ ..._cred, onChain: i < numOnChain }))
       );
       setState("ON_CHAIN_UPDATE_SUCCESS", {});
-      // _updateContext("ON_CHAIN_UPDATE_SUCCESS", {}, false);
     }
   }, [contextState]);
 

@@ -38,6 +38,9 @@ export const calculateNextState = (
 
   switch (message.action as Action) {
     case "DISCONNECT_WALLET":
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> CHECKING (send: true)`
+      );
       result = {
         ...currentContext,
         state: "CHECKING" as State,
@@ -50,6 +53,9 @@ export const calculateNextState = (
       return result;
 
     case "IMPORT_ACCOUNT":
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> ACCOUNT_IMPORT (send: false)`
+      );
       return {
         ...currentContext,
         action: message.action,
@@ -58,10 +64,21 @@ export const calculateNextState = (
       };
 
     case "REQUEST_CONTEXT":
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> UNCHANGED (send: true)`
+      );
       return { ...currentContext, action: "UPDATE_CONTEXT", send: true };
 
     case "FOUND_NO_ACCOUNT":
-      if (currentContext.state !== "CHECKING") return currentContext;
+      if (currentContext.state !== "CHECKING") {
+        console.log(
+          `[stateMachine] ${message.action}: ${currentContext.state} -> UNCHANGED (send: ${currentContext.send})`
+        );
+        return currentContext;
+      }
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> ACCOUNT_DOES_NOT_EXIST (send: false)`
+      );
       return {
         ...currentContext,
         action: message.action,
@@ -74,8 +91,15 @@ export const calculateNextState = (
       if (
         currentContext.state !== "CHECKING" &&
         currentContext.state !== "ACCOUNT_EXISTS"
-      )
+      ) {
+        console.log(
+          `[stateMachine] ${message.action}: ${currentContext.state} -> UNCHANGED (send: ${currentContext.send})`
+        );
         return currentContext;
+      }
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> ACCOUNT_EXISTS (send: true)`
+      );
       return {
         ...currentContext,
         action: message.action,
@@ -85,7 +109,15 @@ export const calculateNextState = (
       };
 
     case "ACCOUNT_IMPORT_SUCCESS":
-      if (currentContext.state != "ACCOUNT_IMPORT") return currentContext;
+      if (currentContext.state != "ACCOUNT_IMPORT") {
+        console.log(
+          `[stateMachine] ${message.action}: ${currentContext.state} -> CHECKING (send: ${currentContext.send})`
+        );
+        return currentContext;
+      }
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> LOGGED_IN (send: true)`
+      );
       return {
         ...currentContext,
         action: message.action,
@@ -95,7 +127,9 @@ export const calculateNextState = (
       };
 
     case "ACCOUNT_RESET_REQUESTED":
-      console.error("ACCOUNT_RESET_REQUESTED");
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> ACCOUNT_RESET (send: true)`
+      );
       // if (currentContext.state != "ACCOUNT_RESET") return currentContext;
       return {
         ...currentContext,
@@ -109,8 +143,15 @@ export const calculateNextState = (
       if (
         currentContext.state != "ACCOUNT_RESET" &&
         currentContext.state != "ACCOUNT_EXISTS"
-      )
+      ) {
+        console.log(
+          `[stateMachine] ${message.action}: ${currentContext.state} -> UNCHANGED (send: ${currentContext.send})`
+        );
         return currentContext;
+      }
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> LOGGED_IN (send: true)`
+      );
       return {
         ...currentContext,
         action: message.action,
@@ -120,8 +161,15 @@ export const calculateNextState = (
       };
 
     case "ACCOUNT_CREATION_SUCCESS":
-      if (currentContext.state !== "ACCOUNT_DOES_NOT_EXIST")
+      if (currentContext.state !== "ACCOUNT_DOES_NOT_EXIST") {
+        console.log(
+          `[stateMachine] ${message.action}: ${currentContext.state} -> UNCHANGED (send: ${currentContext.send})`
+        );
         return currentContext;
+      }
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> LOGGED_IN (send: true)`
+      );
       return {
         ...currentContext,
         action: message.action,
@@ -131,8 +179,15 @@ export const calculateNextState = (
       };
 
     case "ACCOUNT_CREATION_FAILURE":
-      if (currentContext.state !== "ACCOUNT_DOES_NOT_EXIST")
+      if (currentContext.state !== "ACCOUNT_DOES_NOT_EXIST") {
+        console.log(
+          `[stateMachine] ${message.action}: ${currentContext.state} -> UNCHANGED (send: ${currentContext.send})`
+        );
         return currentContext;
+      }
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> HOME (send: true)`
+      );
       return {
         ...currentContext,
         action: message.action,
@@ -142,6 +197,9 @@ export const calculateNextState = (
       };
 
     case "SYNC_SUCCESS":
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> ON_CHAIN_UPDATE_IN_PROGRESS (send: false)`
+      );
       return {
         ...currentContext,
         action: "UPDATING_CREDENTIALS_ON_CHAIN_STATUS",
@@ -150,6 +208,9 @@ export const calculateNextState = (
       };
 
     case "ON_CHAIN_UPDATE_SUCCESS":
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> LOGGED_IN (send: false)`
+      );
       return {
         ...currentContext,
         action: message.action,
@@ -158,6 +219,9 @@ export const calculateNextState = (
       };
 
     default:
+      console.log(
+        `[stateMachine] ${message.action}: ${currentContext.state} -> UNCHANGED (send: false)`
+      );
       return {
         ...currentContext,
         context: { ...currentContext.context, ...message.data },

@@ -47,12 +47,6 @@ function useFiniteStateMachine<State>(
     data: Record<string, any> = {},
     send: boolean = false
   ) => {
-    console.debug(
-      "[useFSM updateContext] action, data, send",
-      action,
-      data,
-      send
-    );
     setContext((prev) => {
       if (prev) {
         const result = {
@@ -61,7 +55,6 @@ function useFiniteStateMachine<State>(
           action: action ? action : "",
           send,
         };
-        console.log("[useFSM updateContext] result: ", result);
         return result;
       }
     });
@@ -73,7 +66,6 @@ function useFiniteStateMachine<State>(
 
     // send to all KeyVault tabs (nothing sensitive is ever sent)
     tabs.forEach(async (tab) => {
-      console.debug("sending to tab.id ", tab.id);
       if (typeof tab.id !== "number") return;
 
       await chrome.tabs.sendMessage(tab.id as number, {
@@ -89,18 +81,14 @@ function useFiniteStateMachine<State>(
     if (!message) return;
     setContext((currentContext) => {
       if (!currentContext) return currentContext;
-      const nextContext = calculateNextState(currentContext, message);
-      console.debug("[useFSM nextContext]: ", nextContext);
-      return nextContext;
+      return calculateNextState(currentContext, message);
     });
   }, [message]);
 
   useEffect(() => {
-    console.log("context: ", context);
     const sendMessage = async () => {
       setContext((prev) => {
         if (!prev) return prev;
-        console.debug("[useFSM useEffect setContext] context: ", prev);
         if (!(prev.send && prev.action)) return prev;
         postMessage(prev.action, prev.context);
         return { ...prev, action: "", send: true };

@@ -13,7 +13,7 @@ export const getHostname = (
       }
       return hostname;
     } catch (e) {
-      console.log("Unable to read current tab's url: ", e);
+      console.debug("Unable to read current tab's url: ", e);
     }
   } else if (currentTab?.url) {
     try {
@@ -25,7 +25,7 @@ export const getHostname = (
       }
       return hostname;
     } catch (e) {
-      console.log("Unable to read current tab's url: ", e);
+      console.debug("Unable to read current tab's url: ", e);
     }
   }
   return null;

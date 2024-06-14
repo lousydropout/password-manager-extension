@@ -43,11 +43,6 @@ export const Dashboard = ({
   const [view, setView] = useState<View>("All Credentials");
 
   const credentials = getCredsByURL(creds);
-  console.log("creds: ", creds);
-  console.log("credentials: ", credentials);
-
-  const credsByUrl = getEntriesByURL(creds);
-  console.log("credsByUrl: ", credsByUrl);
 
   interface CredentialsProps {
     credentials: { [key: string]: Cred[] };
@@ -56,8 +51,6 @@ export const Dashboard = ({
 
   const CredCardsForUrl = ({ credentials, onDelete }: CredentialsProps) => {
     const sortedKeys = Object.keys(credentials).sort();
-    console.log("[CredCardsForUrl] sortedKeys: ", sortedKeys);
-    console.log("[CredCardsForUrl] credentials: ", credentials);
 
     return (
       <Box>
@@ -118,8 +111,6 @@ export const Dashboard = ({
   const onDelete = async (index: number) => {
     const result = await deleteEntry(cryptoKey, creds, index);
     setCreds(result);
-    console.log("creds: ", creds);
-    console.log("result: ", result);
   };
 
   const getCiphertexts = async () => {
@@ -130,13 +121,8 @@ export const Dashboard = ({
 
   // get ciphertexts from creds and set them to encrypted
   useEffect(() => {
-    console.log("creds: ", creds, "encrypted: ", encrypted);
     getCiphertexts();
   }, [creds]);
-
-  useEffect(() => {
-    console.log("encrypted: ", encrypted);
-  }, [encrypted]);
 
   // decrypt all remaining encrypted creds and set them to creds
   useEffect(() => {

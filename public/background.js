@@ -8,7 +8,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (
     message.origin === "koni-page" ||
     message.origin === "koni-content" ||
-    message.source === "react-devtools-content-script"
+    message.source === "react-devtools-content-script" ||
+    message.source === "react-devtools-bridge"
   )
     return false;
   console.debug("[background] Message received: ", message);

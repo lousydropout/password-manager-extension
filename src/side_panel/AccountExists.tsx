@@ -102,7 +102,6 @@ export const AccountExists = ({
             colorScheme="primary"
             isDisabled={importing}
             onClick={async () => {
-              console.log("importing");
               let _jwk;
               try {
                 setImporting(true);

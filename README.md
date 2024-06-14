@@ -4,13 +4,13 @@
 
 ### Process Overview
 
-1. **React App Sends Data**: The React app sends data (e.g., a secret password) to the extension's content script using `window.postMessage`. This is triggered by a user action, such as clicking a submit button.
+1. **React App Sends Data**: The React app sends data (e.g., ciphertext) to the extension's content script using `window.postMessage`. This is triggered by a user action, such as clicking a submit button.
 
    ```jsx
    // Inside the React app
-   const sendData = (secretPassword) => {
+   const sendData = (ciphertext) => {
      window.postMessage(
-       { type: "FROM_PAGE", text: secretPassword },
+       { type: "FROM_PAGE", ciphertext },
        window.location.origin
      );
    };
@@ -25,7 +25,7 @@
        event.origin === window.location.origin &&
        event.data.type === "FROM_PAGE"
      ) {
-       chrome.runtime.sendMessage({ password: event.data.text });
+       chrome.runtime.sendMessage({ ciphertext: event.data.ciphertext });
      }
    });
    ```
@@ -35,8 +35,8 @@
    ```javascript
    // Inside the background script or content script
    chrome.runtime.onMessage.addListener((message) => {
-     if (message.password) {
-       chrome.storage.local.set({ "secret-password": message.password });
+     if (message.ciphertext) {
+       chrome.storage.local.set({ ciphertext: message.ciphertext });
      }
    });
    ```
@@ -66,7 +66,7 @@ The `useChromeStorageLocal` custom hook abstracts interactions with `chrome.stor
 When sending messages within the extension (e.g., from content script to background script or from the React app through a direct `chrome.runtime.sendMessage` call), use promise-based error handling to gracefully handle situations where the receiving end isn't available.
 
 ```javascript
-chrome.runtime.sendMessage({ password: secretPassword }).catch((error) => {
+chrome.runtime.sendMessage({ ciphertext }).catch((error) => {
   console.log(
     "Receiving end does not exist, message will be processed when available."
   );

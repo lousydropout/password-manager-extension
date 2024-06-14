@@ -25,7 +25,6 @@ export function useCryptoKeyManager(): [
     const _jwkHash = await hash(
       JSON.stringify(jwk, Object.keys(jwk as JsonWebKey).sort())
     );
-    console.log("[calcAndSetJwkHash]: ", jwk, _jwkHash);
     setJwkHash(_jwkHash);
   };
 
@@ -51,7 +50,6 @@ export function useCryptoKeyManager(): [
     if (!hasLoadedJwk) return;
 
     // generate key if none exists
-    console.log("generate key");
     if (jwk === null) generateKeyHandler();
   }, [jwk, hasLoadedJwk]);
 
