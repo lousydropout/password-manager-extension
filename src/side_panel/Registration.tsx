@@ -14,7 +14,7 @@ export const Registration = () => (
     </Heading>
     <CustomButton
       colorScheme="secondary"
-      onClick={async () => await chrome.tabs.create({ url: URL })}
+      onClick={async () => await chrome.tabs.create({ url: `${URL}/app` })}
     >
       Open
     </CustomButton>

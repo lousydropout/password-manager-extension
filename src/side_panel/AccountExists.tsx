@@ -65,7 +65,7 @@ export const AccountExists = ({
             colorScheme="secondary"
             onClick={async () => {
               if (currentUrl !== getHostname(URL)) {
-                await chrome.tabs.create({ url: URL });
+                await chrome.tabs.create({ url: `${URL}/app` });
               } else {
                 setImportOrReset("RESET");
                 // await generateKey();

@@ -13,15 +13,9 @@ export const Welcome = () => (
     </Heading>
     <CustomButton
       colorScheme="primary"
-      onClick={async () => await chrome.tabs.create({ url: URL })}
+      onClick={async () => await chrome.tabs.create({ url: `${URL}/app` })}
     >
       Open
     </CustomButton>
-    {/* <CustomButton
-      colorScheme="accent"
-      onClick={async () => updateContext("testing", { random: "value" }, true)}
-    >
-      Send random data
-    </CustomButton> */}
   </Box>
 );
