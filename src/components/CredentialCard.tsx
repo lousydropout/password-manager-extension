@@ -15,6 +15,7 @@ import { CustomButton } from "./CustomButton";
 import { Cred } from "../utils/credentials";
 import { CustomTextArea } from "./CustomTextArea";
 import { useState } from "react";
+import { outlineColors } from "../utils/outlineColors";
 
 const CredentialCard = ({
   cred,
@@ -62,7 +63,6 @@ const CredentialCard = ({
         <CustomTextArea
           value={credState?.description || ""}
           // label={"description"}
-          isReadOnly={mode === "latest"}
           onChange={(e) =>
             setCredState({ ...cred, description: e.target.value })
           }
@@ -74,11 +74,16 @@ const CredentialCard = ({
             <>
               <CustomButton
                 colorScheme={"accent"}
+                {...outlineColors.primary}
                 onClick={() => setMode("edit")}
               >
                 Edit
               </CustomButton>
-              <CustomButton colorScheme={"warning"} onClick={onOpen}>
+              <CustomButton
+                colorScheme={"warning"}
+                onClick={onOpen}
+                {...outlineColors.warning}
+              >
                 Delete
               </CustomButton>
             </>
@@ -127,7 +132,8 @@ const CredentialCard = ({
 
           <ModalFooter flexDir={"column"}>
             <CustomButton
-              colorScheme={"accent"}
+              colorScheme={"warning"}
+              {...outlineColors.warning}
               onClick={() => {
                 onDelete(cred.curr as number);
                 onClose();
@@ -137,7 +143,8 @@ const CredentialCard = ({
             </CustomButton>
             <CustomButton
               mt={4}
-              colorScheme={"warning"}
+              colorScheme={"primary"}
+              {...outlineColors.primary}
               onClick={() => {
                 setCredState(cred); // undoes changes
                 setMode("latest");

@@ -73,7 +73,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
           ringColor={colors.secondary.bg}
           borderColor={colors.secondary.bg}
           focusBorderColor={colors.primary.bg}
-          disabled={isReadOnly}
+          cursor={isReadOnly ? "not-allowed" : "auto"}
+          opacity={isReadOnly ? 0.72 : 1}
           pl={2}
           {...rest}
         />
