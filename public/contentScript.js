@@ -1,7 +1,6 @@
 const WEB_DAPP = "localhost";
 
 window.addEventListener("message", (event) => {
-  // console.log("[contentScript] message: ", event.data);
   // Fetch the targetOrigin each time a message is received
   chrome.storage.local.get("targetOrigin", (data) => {
     // Use the retrieved targetOrigin if it exists, otherwise default to "localhost"
@@ -43,7 +42,6 @@ chrome.runtime.onMessage.addListener((msg) => {
 
   // forward message
   if (message.type === "FROM_EXTENSION") {
-    console.debug("[contentScript] message from popup/sidepanel: ", message);
     window.postMessage(message);
   }
 });
@@ -52,7 +50,6 @@ chrome.runtime.onMessage.addListener((msg) => {
 chrome.storage.local.get(
   ["encrypted", "numOnChain"],
   ({ encrypted, numOnChain }) => {
-    console.log("[content] Encrypted data: ", encrypted, numOnChain);
     window.sessionStorage.setItem("encrypted", encrypted || []);
     window.sessionStorage.setItem("numOnChain", numOnChain || 0);
   }

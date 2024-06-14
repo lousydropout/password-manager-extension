@@ -197,7 +197,7 @@ export const Dashboard = ({
           />
         )}
 
-        {view === "Sync" && <Sync encrypted={encrypted} />}
+        {view === "Sync" && <Sync />}
 
         {(view === "Current Page" || view === "All Credentials") && (
           <>
