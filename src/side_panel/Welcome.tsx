@@ -13,7 +13,7 @@ export const Welcome = () => (
     </Heading>
     <CustomButton
       colorScheme="primary"
-      onClick={async () => await chrome.tabs.create({ url: `${URL}/app` })}
+      onClick={async () => await chrome.tabs.create({ url: URL })}
     >
       Open
     </CustomButton>
