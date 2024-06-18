@@ -11,7 +11,6 @@ window.addEventListener("message", (event) => {
 
     // Check if the message's origin matches the targetOrigin
     if (origin !== targetOrigin) {
-      console.warn("bad origin: ", origin, targetOrigin);
       return;
     }
 
