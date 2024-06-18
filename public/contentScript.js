@@ -1,15 +1,19 @@
-const WEB_DAPP = "localhost";
+const LOCALHOST = "localhost";
+const WEB_DAPP = "app.blockchainkeyvault.com";
 
 window.addEventListener("message", (event) => {
   // Fetch the targetOrigin each time a message is received
   chrome.storage.local.get("targetOrigin", (data) => {
     // Use the retrieved targetOrigin if it exists, otherwise default to "localhost"
-    const targetOrigin = data.targetOrigin || WEB_DAPP;
+    const targetOrigin = data.targetOrigin || WEB_DAPP || LOCALHOST;
     // get origin's hostname
     const origin = new URL(event.origin).hostname;
 
     // Check if the message's origin matches the targetOrigin
-    if (origin !== targetOrigin) return;
+    if (origin !== targetOrigin) {
+      console.warn("bad origin: ", origin, targetOrigin);
+      return;
+    }
 
     // Check if the message type is REQUEST_TAB_ID
     if (event.data.type === "REQUEST_TAB_ID") {
